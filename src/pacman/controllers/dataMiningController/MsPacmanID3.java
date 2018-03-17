@@ -28,7 +28,7 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         //attributeList = dataSet.getAttributeListTest();
         selectionMethod = new AttributeSelection();
         tree = new Node().generateTree(dataSet,attributeList);
-        System.out.println();
+        System.out.println("TEST!! SUGUGUGUG!");
     }
 
 
