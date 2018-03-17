@@ -1,5 +1,7 @@
 package pacman.controllers.dataMiningController;
 
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.MultiGraph;
 import pacman.controllers.Controller;
 import pacman.game.Constants;
 import pacman.game.Game;
@@ -19,6 +21,8 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
     private AttributeSelection selectionMethod;
 
     private Node tree;
+    private int nodeCount =0;
+
 
     public MsPacmanID3(){
         dataSet = new DataTable();
@@ -28,8 +32,11 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         //attributeList = dataSet.getAttributeListTest();
         selectionMethod = new AttributeSelection();
         tree = new Node().generateTree(dataSet,attributeList);
-        System.out.println("TEST!! SUGUGUGUG!");
+        System.out.println("Size of tree: "+nodeCount);
+        Utilities.breadth(tree);
+
     }
+
 
 
 
@@ -40,14 +47,18 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
 
 
 
-    private class Node<T>{
+    public class Node<T>{
 
-        private T label, edge;
-        private boolean isLeaf = false;
-        private ArrayList<Node> children = new ArrayList<>();
+        protected T label, edge;
+        protected boolean isLeaf = false;
+        protected Node parent = null;
+        protected ArrayList<Node> children = new ArrayList<>();
+        protected int edgeNbr =0;
 
         private Node generateTree(DataTable dataSet, LinkedList<T> attributeList){
             Node node = new Node();
+
+            nodeCount++;
             if(dataSet.everyTupleInSameClass()){
                 node.isLeaf=true;
                 node.label= dataSet.getClassLabel(1);
@@ -68,13 +79,17 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
                 for(int i = 0; i<partitionedSets.length;i++){
                     if(partitionedSets[i].table.isEmpty()){
                         Node child = new Node();
+                        child.parent=node;
                         T classValue = (T) dataSet.majorityClassValue();
                         child.label=classValue;
                         child.isLeaf=true;
                         node.children.add(child);
+
                     }else {
                         Node child = generateTree(partitionedSets[i],attributeList);
+                        child.parent=node;
                         node.children.add(child);
+
                     }
 
                 }
@@ -84,7 +99,6 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
             }
 
         }
-
 
     }
 }
