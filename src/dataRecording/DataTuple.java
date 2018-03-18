@@ -60,6 +60,13 @@ public class DataTuple {
 	public int numberOfTotalPowerPillsInLevel;
 	private int maximumDistance = 150;
 
+	public MOVE lastPacManMove;
+	public MOVE powerpillMove;
+	public MOVE pillMove;
+	public int pillDist;
+	public int powerpillDist;
+	public String availableMoves;
+
 	public DataTuple(Game game, MOVE move) {
 		if (move == MOVE.NEUTRAL) {
 			move = game.getPacmanLastMoveMade();
@@ -105,6 +112,32 @@ public class DataTuple {
 		this.numberOfNodesInLevel = game.getNumberOfNodes();
 		this.numberOfTotalPillsInLevel = game.getNumberOfPills();
 		this.numberOfTotalPowerPillsInLevel = game.getNumberOfPowerPills();
+
+		int pacmanIndex = game.getPacmanCurrentNodeIndex();
+		if (game.getActivePowerPillsIndices().length > 0) {
+			int powerpillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
+					game.getActivePowerPillsIndices(), DM.PATH);
+			powerpillDist = game.getShortestPathDistance(pacmanIndex, powerpillIndex);
+			powerpillMove = game.getNextMoveTowardsTarget(pacmanIndex,
+					powerpillIndex,
+					DM.PATH);
+		} else {
+			powerpillDist = -1;
+			powerpillMove = MOVE.NEUTRAL;
+		}
+
+		int pillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
+				game.getActivePillsIndices(), DM.PATH);
+		pillDist = game.getShortestPathDistance(pacmanIndex, pillIndex);
+		pillMove = game.getNextMoveTowardsTarget(pacmanIndex,
+				pillIndex,
+				DM.PATH);
+
+		availableMoves = "";
+		for (MOVE m : game.getPossibleMoves(pacmanIndex))
+			availableMoves += m.toString();
+
+		lastPacManMove = game.getPacmanLastMoveMade();
 	}
 
 	public DataTuple(String data) {
@@ -136,6 +169,19 @@ public class DataTuple {
 		this.numberOfNodesInLevel = Integer.parseInt(dataSplit[22]);
 		this.numberOfTotalPillsInLevel = Integer.parseInt(dataSplit[23]);
 		this.numberOfTotalPowerPillsInLevel = Integer.parseInt(dataSplit[24]);
+
+		if (dataSplit.length > 25)
+			this.powerpillDist = Integer.parseInt(dataSplit[25]);
+		if (dataSplit.length > 26)
+			this.powerpillMove = MOVE.valueOf(dataSplit[26]);
+		if (dataSplit.length > 27)
+			this.pillDist = Integer.parseInt(dataSplit[27]);
+		if (dataSplit.length > 28)
+			this.pillMove = MOVE.valueOf(dataSplit[28]);
+		if (dataSplit.length > 29)
+			this.lastPacManMove = MOVE.valueOf(dataSplit[29]);
+		if (dataSplit.length > 30)
+			this.availableMoves = dataSplit[30];
 	}
 
 	public String getSaveString() {
@@ -166,6 +212,13 @@ public class DataTuple {
 		stringbuilder.append(this.numberOfNodesInLevel + ";");
 		stringbuilder.append(this.numberOfTotalPillsInLevel + ";");
 		stringbuilder.append(this.numberOfTotalPowerPillsInLevel + ";");
+
+		stringbuilder.append(this.powerpillDist + ";");
+		stringbuilder.append(this.powerpillMove + ";");
+		stringbuilder.append(this.pillDist + ";");
+		stringbuilder.append(this.pillMove + ";");
+		stringbuilder.append(this.lastPacManMove + ";");
+		stringbuilder.append(this.availableMoves + ";");
 
 		return stringbuilder.toString();
 	}

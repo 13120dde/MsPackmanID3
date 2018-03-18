@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java" line="131" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" id="2c3ebc61-2ccf-4d71-b1fd-2b5eaad54902" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/Executor.class" afterPath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/Executor.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myData/18000" afterPath="$PROJECT_DIR$/myData/18000" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/MsPackmanID3/dataRecording/DataTuple.class" afterPath="$PROJECT_DIR$/out/production/MsPackmanID3/dataRecording/DataTuple.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/DataTable$DiscreteValues.class" afterPath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/DataTable$DiscreteValues.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/DataTable.class" afterPath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/DataTable.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/MsPacmanID3$Node.class" afterPath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/MsPacmanID3$Node.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/MsPacmanID3.class" afterPath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/controllers/id3Controller/MsPacmanID3.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/game/Game.class" afterPath="$PROJECT_DIR$/out/production/MsPackmanID3/pacman/game/Game.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myData/18000" afterPath="$PROJECT_DIR$/myData/18000" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myData/trainingData.txt" afterPath="$PROJECT_DIR$/myData/trainingData.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dataRecording/DataTuple.java" afterPath="$PROJECT_DIR$/src/dataRecording/DataTuple.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/pacman/Executor.java" afterPath="$PROJECT_DIR$/src/pacman/Executor.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java" afterPath="$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java" afterPath="$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/pacman/game/Game.java" afterPath="$PROJECT_DIR$/src/pacman/game/Game.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -31,19 +27,60 @@
     <SUITE FILE_PATH="coverage/Ms_Pacman$DataSet.coverage" NAME="DataSet Coverage Results" MODIFIED="1521211570697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>pacman.controllers.dataMiningController.*</FILTER>
     </SUITE>
+    <SUITE FILE_PATH="coverage/Ms_Pacman$Executor.coverage" NAME="Executor Coverage Results" MODIFIED="1521404678494" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>pacman.*</FILTER>
+    </SUITE>
+  </component>
+  <component name="DockManager">
+    <window id="2">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="DataTuple.java" pinned="false" current-in-tab="true">
+              <entry file="file://F:/Downloads/DataTuple.java">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="316">
+                    <caret line="115" column="0" lean-forward="false" selection-start-line="115" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="StartGenerator.java" pinned="false" current-in-tab="true">
+              <entry file="file://F:/Downloads/StartGenerator.java">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="731">
+                    <caret line="48" column="77" lean-forward="false" selection-start-line="48" selection-start-column="69" selection-end-line="48" selection-end-column="77" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="Ms_Pacman" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5671875">
+    <splitter split-orientation="horizontal" split-proportion="0.45459032">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
           <file leaf-file-name="DataTable.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="347">
-                  <caret line="123" column="55" lean-forward="true" selection-start-line="123" selection-start-column="55" selection-end-line="123" selection-end-column="55" />
+                <state relative-caret-position="434">
+                  <caret line="36" column="18" lean-forward="true" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="18" />
                   <folding>
                     <element signature="method#addTuple#0;class#DataTable#0" expanded="false" />
                     <element signature="method#clone#0;class#DataTable#0" expanded="false" />
@@ -51,6 +88,7 @@
                     <element signature="method#getClassLabel#0;class#DataTable#0" expanded="false" />
                     <element signature="method#getUniqueValsFromColumn#0;class#DataTable#0" expanded="false" />
                     <element signature="method#everyTupleInSameClass#0;class#DataTable#0" expanded="false" />
+                    <element signature="method#majorityClassValue#0;class#DataTable#0" expanded="false" />
                     <element signature="method#partitionSetOnAttributeValue#0;class#DataTable#0" expanded="false" />
                     <element signature="method#splitTableForHoldout#0;class#DataTable#0" expanded="false" />
                     <element signature="method#loadExampleData#0;class#DataTable#0" expanded="false" />
@@ -59,34 +97,14 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Game.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/pacman/game/Game.java">
+          <file leaf-file-name="Utilities.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/Utilities.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="286">
-                  <caret line="962" column="0" lean-forward="false" selection-start-line="962" selection-start-column="0" selection-end-line="962" selection-end-column="0" />
+                <state relative-caret-position="612">
+                  <caret line="45" column="23" lean-forward="false" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
                   <folding>
-                    <element signature="e#25394#25395#0" expanded="true" />
+                    <element signature="imports" expanded="true" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/pacman/game/Constants.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="442">
-                  <caret line="26" column="40" lean-forward="true" selection-start-line="26" selection-start-column="40" selection-end-line="26" selection-end-column="40" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Executor.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/pacman/Executor.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="459">
-                  <caret line="91" column="4" lean-forward="true" selection-start-line="91" selection-start-column="4" selection-end-line="91" selection-end-column="4" />
-                  <folding />
                 </state>
               </provider>
             </entry>
@@ -98,18 +116,38 @@
           <file leaf-file-name="MsPacmanID3.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="408">
-                  <caret line="33" column="31" lean-forward="true" selection-start-line="33" selection-start-column="31" selection-end-line="33" selection-end-column="31" />
+                <state relative-caret-position="496">
+                  <caret line="201" column="0" lean-forward="false" selection-start-line="201" selection-start-column="0" selection-end-line="203" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="DataCollectorController.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/dataRecording/DataCollectorController.java">
+          <file leaf-file-name="Executor.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/pacman/Executor.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="340">
-                  <caret line="26" column="31" lean-forward="true" selection-start-line="26" selection-start-column="31" selection-end-line="26" selection-end-column="31" />
+                <state relative-caret-position="1020">
+                  <caret line="88" column="2" lean-forward="false" selection-start-line="88" selection-start-column="2" selection-end-line="88" selection-end-column="2" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="18000" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/myData/18000">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="0">
+                  <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="trainingData.txt" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/myData/trainingData.txt">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="0">
+                  <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -118,8 +156,8 @@
           <file leaf-file-name="DataSaverLoader.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/dataRecording/DataSaverLoader.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="272">
-                  <caret line="16" column="42" lean-forward="true" selection-start-line="16" selection-start-column="42" selection-end-line="16" selection-end-column="42" />
+                <state relative-caret-position="323">
+                  <caret line="19" column="30" lean-forward="false" selection-start-line="19" selection-start-column="30" selection-end-line="19" selection-end-column="30" />
                   <folding>
                     <element signature="e#333#334#0" expanded="true" />
                     <element signature="e#389#390#0" expanded="true" />
@@ -131,9 +169,21 @@
           <file leaf-file-name="DataTuple.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/dataRecording/DataTuple.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="279">
-                  <caret line="71" column="0" lean-forward="false" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
+                <state relative-caret-position="119">
+                  <caret line="11" column="52" lean-forward="true" selection-start-line="11" selection-start-column="52" selection-end-line="11" selection-end-column="52" />
                   <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Game.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/pacman/game/Game.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="374">
+                  <caret line="962" column="0" lean-forward="false" selection-start-line="962" selection-start-column="0" selection-end-line="962" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#25394#25395#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -141,6 +191,11 @@
         </leaf>
       </split-second>
     </splitter>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>pillMove</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -167,13 +222,14 @@
         <option value="$PROJECT_DIR$/src/pacman/controllers/id3Controller/Attribute.java" />
         <option value="$PROJECT_DIR$/src/pacman/controllers/id3Controller/AttributeSelection.java" />
         <option value="$PROJECT_DIR$/src/pacman/controllers/id3Controller/Utilities.java" />
-        <option value="$PROJECT_DIR$/myData/trainingData.txt" />
-        <option value="$PROJECT_DIR$/myData/18000" />
-        <option value="$PROJECT_DIR$/src/dataRecording/DataTuple.java" />
-        <option value="$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java" />
         <option value="$PROJECT_DIR$/src/pacman/game/Constants.java" />
-        <option value="$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java" />
+        <option value="F:/Downloads/StartGenerator.java" />
+        <option value="$PROJECT_DIR$/myData/18000" />
+        <option value="$PROJECT_DIR$/myData/trainingData.txt" />
         <option value="$PROJECT_DIR$/src/pacman/Executor.java" />
+        <option value="$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java" />
+        <option value="$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java" />
+        <option value="$PROJECT_DIR$/src/dataRecording/DataTuple.java" />
       </list>
     </option>
   </component>
@@ -272,16 +328,6 @@
               <item name="controllers" type="462c0819:PsiDirectoryNode" />
               <item name="id3Controller" type="462c0819:PsiDirectoryNode" />
               <item name="MsPacmanID3" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="Ms_Pacman" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Ms_Pacman" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="pacman" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-              <item name="id3Controller" type="462c0819:PsiDirectoryNode" />
-              <item name="MsPacmanID3" type="1a9f42e2:ClassTreeNode" />
-              <item name="Node" type="1a9f42e2:ClassTreeNode" />
             </path>
           </expand>
           <select />
@@ -500,8 +546,8 @@
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Application.Executor" />
-        <item index="1" class="java.lang.String" itemvalue="Application.MsPacmanID3 (1)" />
-        <item index="2" class="java.lang.String" itemvalue="Application.DataTable" />
+        <item index="1" class="java.lang.String" itemvalue="Application.DataTable" />
+        <item index="2" class="java.lang.String" itemvalue="Application.MsPacmanID3 (1)" />
         <item index="3" class="java.lang.String" itemvalue="Application.Utilities" />
         <item index="4" class="java.lang.String" itemvalue="Application.AttributeSelection" />
       </list>
@@ -541,12 +587,13 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32522798" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1793313" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.09648438" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.11210938" sideWeight="0.4954955" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11210938" sideWeight="0.4954955" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32978722" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -561,7 +608,6 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" x="87" y="87" width="2562" height="1570" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.09648438" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -615,24 +661,30 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java</url>
-          <line>527</line>
+          <line>382</line>
           <properties />
           <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java</url>
-          <line>621</line>
+          <line>476</line>
           <properties />
           <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java</url>
-          <line>610</line>
+          <line>459</line>
           <properties />
-          <option name="timeStamp" value="51" />
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java</url>
+          <line>54</line>
+          <properties />
+          <option name="timeStamp" value="73" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="56" />
+      <option name="time" value="74" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -648,6 +700,7 @@
             <element signature="method#getClassLabel#0;class#DataTable#0" expanded="false" />
             <element signature="method#getUniqueValsFromColumn#0;class#DataTable#0" expanded="false" />
             <element signature="method#everyTupleInSameClass#0;class#DataTable#0" expanded="false" />
+            <element signature="method#majorityClassValue#0;class#DataTable#0" expanded="false" />
             <element signature="method#partitionSetOnAttributeValue#0;class#DataTable#0" expanded="false" />
             <element signature="method#splitTableForHoldout#0;class#DataTable#0" expanded="false" />
             <element signature="method#loadExampleData#0;class#DataTable#0" expanded="false" />
@@ -689,7 +742,7 @@
         <state relative-caret-position="918">
           <caret line="54" column="13" lean-forward="false" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
             <element signature="e#3813#3814#0" expanded="false" />
             <element signature="e#3862#3863#0" expanded="false" />
           </folding>
@@ -707,6 +760,7 @@
             <element signature="method#getClassLabel#0;class#DataTable#0" expanded="false" />
             <element signature="method#getUniqueValsFromColumn#0;class#DataTable#0" expanded="false" />
             <element signature="method#everyTupleInSameClass#0;class#DataTable#0" expanded="false" />
+            <element signature="method#majorityClassValue#0;class#DataTable#0" expanded="false" />
             <element signature="method#partitionSetOnAttributeValue#0;class#DataTable#0" expanded="false" />
             <element signature="method#splitTableForHoldout#0;class#DataTable#0" expanded="false" />
             <element signature="method#loadExampleData#0;class#DataTable#0" expanded="false" />
@@ -737,7 +791,7 @@
         <state relative-caret-position="1666">
           <caret line="98" column="0" lean-forward="false" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
             <element signature="e#3813#3814#0" expanded="false" />
             <element signature="e#3862#3863#0" expanded="false" />
           </folding>
@@ -755,54 +809,9 @@
         <state relative-caret-position="918">
           <caret line="54" column="13" lean-forward="false" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
             <element signature="e#3813#3814#0" expanded="false" />
             <element signature="e#3862#3863#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/Utilities.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="45" column="23" lean-forward="false" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myData/trainingData.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="32" column="90" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="4817" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myData/18000">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="826">
-          <caret line="13863" column="0" lean-forward="false" selection-start-line="13863" selection-start-column="0" selection-end-line="13863" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dataRecording/DataCollectorController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="26" column="31" lean-forward="true" selection-start-line="26" selection-start-column="31" selection-end-line="26" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dataRecording/DataSaverLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="42" lean-forward="true" selection-start-line="16" selection-start-column="42" selection-end-line="16" selection-end-column="42" />
-          <folding>
-            <element signature="e#333#334#0" expanded="true" />
-            <element signature="e#389#390#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -815,25 +824,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/pacman/Executor.java">
+    <entry file="file://$PROJECT_DIR$/src/pacman/controllers/examples/RandomPacMan.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="91" column="4" lean-forward="true" selection-start-line="91" selection-start-column="4" selection-end-line="91" selection-end-column="4" />
+        <state relative-caret-position="255">
+          <caret line="18" column="46" lean-forward="false" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="46" />
+          <folding>
+            <element signature="e#471#472#0" expanded="false" />
+            <element signature="e#523#524#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pacman/controllers/examples/StarterPacMan.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="22" column="46" lean-forward="false" selection-start-line="22" selection-start-column="39" selection-end-line="22" selection-end-column="46" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java">
+    <entry file="file://$PROJECT_DIR$/src/pacman/controllers/examples/Legacy.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="33" column="31" lean-forward="true" selection-start-line="33" selection-start-column="31" selection-end-line="33" selection-end-column="31" />
+        <state relative-caret-position="119">
+          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/Utilities.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="612">
+          <caret line="45" column="23" lean-forward="false" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dataRecording/DataSaverLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="30" lean-forward="false" selection-start-line="19" selection-start-column="30" selection-end-line="19" selection-end-column="30" />
+          <folding>
+            <element signature="e#333#334#0" expanded="true" />
+            <element signature="e#389#390#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dataRecording/DataCollectorController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="26" column="31" lean-forward="true" selection-start-line="26" selection-start-column="31" selection-end-line="26" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/Downloads/StartGenerator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="48" column="77" lean-forward="false" selection-start-line="48" selection-start-column="69" selection-end-line="48" selection-end-column="77" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pacman/game/Game.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
+        <state relative-caret-position="374">
           <caret line="962" column="0" lean-forward="false" selection-start-line="962" selection-start-column="0" selection-end-line="962" selection-end-column="0" />
           <folding>
             <element signature="e#25394#25395#0" expanded="true" />
@@ -841,10 +898,58 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://F:/Downloads/DataTuple.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="316">
+          <caret line="115" column="0" lean-forward="false" selection-start-line="115" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myData/18000">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myData/trainingData.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pacman/Executor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1020">
+          <caret line="88" column="2" lean-forward="false" selection-start-line="88" selection-start-column="2" selection-end-line="88" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/MsPacmanID3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="496">
+          <caret line="201" column="0" lean-forward="false" selection-start-line="201" selection-start-column="0" selection-end-line="203" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dataRecording/DataTuple.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="11" column="52" lean-forward="true" selection-start-line="11" selection-start-column="52" selection-end-line="11" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/pacman/controllers/id3Controller/DataTable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="123" column="55" lean-forward="true" selection-start-line="123" selection-start-column="55" selection-end-line="123" selection-end-column="55" />
+        <state relative-caret-position="434">
+          <caret line="36" column="18" lean-forward="true" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="18" />
           <folding>
             <element signature="method#addTuple#0;class#DataTable#0" expanded="false" />
             <element signature="method#clone#0;class#DataTable#0" expanded="false" />
@@ -852,18 +957,11 @@
             <element signature="method#getClassLabel#0;class#DataTable#0" expanded="false" />
             <element signature="method#getUniqueValsFromColumn#0;class#DataTable#0" expanded="false" />
             <element signature="method#everyTupleInSameClass#0;class#DataTable#0" expanded="false" />
+            <element signature="method#majorityClassValue#0;class#DataTable#0" expanded="false" />
             <element signature="method#partitionSetOnAttributeValue#0;class#DataTable#0" expanded="false" />
             <element signature="method#splitTableForHoldout#0;class#DataTable#0" expanded="false" />
             <element signature="method#loadExampleData#0;class#DataTable#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dataRecording/DataTuple.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="71" column="0" lean-forward="false" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>

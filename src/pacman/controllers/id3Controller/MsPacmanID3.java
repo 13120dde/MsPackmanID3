@@ -1,13 +1,12 @@
 package pacman.controllers.id3Controller;
 
-import org.graphstream.graph.implementations.MultiGraph;
+import dataRecording.DataTuple;
 import pacman.controllers.Controller;
 import pacman.game.Constants;
 import pacman.game.Game;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 
 import static pacman.game.Constants.MOVE.*;
 
@@ -22,7 +21,38 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
     @Override
     public Constants.MOVE getMove(Game game, long timeDue) {
 
-        T move = (T) classify(dataSet.getTuple(game),tree);
+
+        ArrayList<T>[] tuple = new ArrayList[2];
+        ArrayList<T> columns = new ArrayList<>();
+        ArrayList<T> vals= new ArrayList<>();
+
+        //Create headers for the tuple
+        columns.add((T) DataTable.DiscreteValues.GHOST_DISTANCE);
+        columns.add((T) DataTable.DiscreteValues.GHOST_DIRECTION);
+        columns.add((T) DataTable.DiscreteValues.PILL_DISTANCE);
+        columns.add((T) DataTable.DiscreteValues.DIRECTION_TO_PILL);
+
+        T closestGhostDistance = getClosestGhostDistance(game);
+        T closestGhostDirection= getClosestGhostDirection(game);
+
+
+        int pacmanIndex = game.getPacmanCurrentNodeIndex();
+        int pillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
+                game.getActivePillsIndices(), Constants.DM.PATH);
+        int pillDist = game.getShortestPathDistance(pacmanIndex, pillIndex);
+        Constants.MOVE pillMove = game.getNextMoveTowardsTarget(pacmanIndex,
+                pillIndex, Constants.DM.PATH);
+
+        vals.add(closestGhostDistance);
+        vals.add(closestGhostDirection);
+        vals.add((T) new DataTuple(game, Constants.MOVE.UP).discretizeDistance(pillDist));
+        vals.add((T) dataSet.parseMove(pillMove));
+
+        tuple[0] = columns;
+        tuple[1] = vals;
+
+
+        T move = (T) classify(tuple,tree,timeDue);
         Constants.MOVE returnMove = null;
         if(move == DataTable.DiscreteValues.UP)
             returnMove = UP;
@@ -34,12 +64,85 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
             returnMove = RIGHT;
 
         return returnMove;
+
+    }
+
+    private T getClosestGhostDistance(Game game) {
+        int[] distances = new int[4];
+        int pacmanIndex = game.getPacmanCurrentNodeIndex();
+        int ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY);
+        distances[0] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.INKY);
+        distances[1] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY);
+        distances[2]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.SUE);
+        distances[3]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+
+        int closestDistance = Integer.MAX_VALUE;
+        for(int i =0 ; i<4;i++){
+            if(distances[i]>closestDistance)
+                closestDistance = distances[i];
+        }
+
+        return (T) new DataTuple(game, Constants.MOVE.NEUTRAL).discretizeDistance(closestDistance);
+    }
+
+    private T getClosestGhostDirection(Game game) {
+        int[] distances = new int[4];
+        int pacmanIndex = game.getPacmanCurrentNodeIndex();
+        int ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY);
+        distances[0] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.INKY);
+        distances[1] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY);
+        distances[2]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.SUE);
+        distances[3]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+
+
+        int closestDistance = Integer.MAX_VALUE;
+        for(int i =0 ; i<4;i++){
+            if(distances[i]<closestDistance)
+                closestDistance = i;
+        }
+
+        Constants.MOVE ghostMove = null;
+        switch (closestDistance){
+            case 0:
+                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.BLINKY);
+                 break;
+
+            case 1:
+                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.INKY);
+                 break;
+
+            case 2:
+                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.PINKY);
+                 break;
+
+            case 3:
+                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.SUE);
+                 break;
+
+
+        }
+
+        return (T) dataSet.parseMove(ghostMove);
     }
 
     private DataTable dataSet;
     private LinkedList<T> attributeList;
     private AttributeSelection selectionMethod;
 
+    private boolean gameOff = false;
     private Node tree;
     private int nodeCount =0;
 
@@ -54,8 +157,7 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         selectionMethod = new AttributeSelection();
         tree = new Node().generateTree(splitTables[0],attributeList);
         System.out.println("### TREE BUILT\n\tAccuracy of tree:  "+getAccuracyOfTree(splitTables[1]));
-
-        System.out.println();
+        gameOff =true;
         //  Utilities.createGraph(tree);
 
     }
@@ -74,7 +176,7 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         for(int i =1;i<size;i++){
             ArrayList<T>[] tuple =  splittable.getTuple(i);
             if(tuple!=null){
-                classifiedAs.add((T)  classify(tuple,tree));
+                classifiedAs.add((T)  classify(tuple,tree,0));
             }
         }
 
@@ -87,8 +189,9 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
     }
 
 
-    public T classify(ArrayList<T>[] tuple, Node<T> node) {
+    public T classify(ArrayList<T>[] tuple, Node<T> node, long timeDue) {
         T toReturn = null;
+
         if(node.isLeaf)
 
             return (T) node.label;
@@ -100,8 +203,13 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
 
             //check which child node has edge = value
             for(int i = 0; i<node.children.size();i++){
+                long currentTime = System.currentTimeMillis();
+                /*if( !gameOff && currentTime>=timeDue){
+                    System.out.println("\t\t>>>>>time limit reached, returned: "+toReturn.toString());
+                    break;
+                }*/
                 if(node.children.get(i).edge==value){
-                   toReturn= (T) classify(tuple, node.children.get(i));
+                   toReturn= (T) classify(tuple, node.children.get(i), timeDue);
                 }
             }
             return toReturn;

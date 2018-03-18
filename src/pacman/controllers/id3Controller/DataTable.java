@@ -40,36 +40,23 @@ public class DataTable <T> implements Cloneable {
         STUDENT,
         CREDIT_RATING,
 
-
         //Column names
-        PILLS_IN_LEVEL,
-        PILLS_LEFT,
-        POWER_PILLS_IN_LEVEL,
-        POWER_PILLS_LEFT,
-
-
-        BLINKY_EDIBLE,
-        BLINKY_DISTANCE,
-        BLINKY_DIRECTION,
-        INKY_EDIBLE,
-        INKY_DISTANCE,
-        INKY_DIRECTION,
-        PINKY_EDIBLE,
-        PINKY_DISTANCE,
-        PINKY_DIRECTION,
-        SUE_EDIBLE,
-        SUE_DISTANCE,
-        SUE_DIRECTION,
+        PILL_DISTANCE,
+        DIRECTION_TO_PILL,
+        GHOST_DISTANCE,
+        GHOST_DIRECTION,
 
         CLASS,
 
         //Values
-        TRUE,
-        FALSE,
+        DISTANCE_LOW,
+        DISTANCE_MEDIUM,
+        DISTANCE_HIGH,
+        DISTANCE_VERY_HIGH,
         UP,
         DOWN,
         LEFT,
-        RIGHT
+        NEUTRAL, RIGHT
 
 
     }
@@ -106,122 +93,15 @@ public class DataTable <T> implements Cloneable {
         }
         return tuple;
     }
-    protected  <T> ArrayList<T>[] getTuple(Game game) {
-
-        ArrayList<T>[] tuple = new ArrayList[2];
-        ArrayList<T> columns = new ArrayList<>();
-        ArrayList<T> vals= new ArrayList<>();
-
-        columns.add((T) DiscreteValues.PILLS_IN_LEVEL);
-        columns.add((T) DiscreteValues.PILLS_LEFT);
-        columns.add((T) DiscreteValues.POWER_PILLS_IN_LEVEL);
-        columns.add((T) DiscreteValues.POWER_PILLS_LEFT);
-        columns.add((T) DiscreteValues.BLINKY_EDIBLE);
-        columns.add((T) DiscreteValues.BLINKY_DISTANCE);
-        columns.add((T) DiscreteValues.BLINKY_DIRECTION);
-        columns.add((T) DiscreteValues.INKY_EDIBLE);
-        columns.add((T) DiscreteValues.INKY_DISTANCE);
-        columns.add((T) DiscreteValues.INKY_DIRECTION);
-        columns.add((T) DiscreteValues.PINKY_EDIBLE);
-        columns.add((T) DiscreteValues.PINKY_DISTANCE);
-        columns.add((T) DiscreteValues.PINKY_DIRECTION);
-        columns.add((T) DiscreteValues.SUE_EDIBLE);
-        columns.add((T) DiscreteValues.SUE_DISTANCE);
-        columns.add((T) DiscreteValues.SUE_DIRECTION);
-        columns.add((T) DiscreteValues.CLASS);         //MUST BE LAST!!
-        DataTuple t = new DataTuple(game,Constants.MOVE.UP);
-
-       vals.add((T) t.discretizeNumberOfPills(game.getNumberOfPills()));
-       vals.add((T) t.discretizeNumberOfPills(game.getNumberOfActivePills()));
-       vals.add((T) t.discretizeNumberOfPills(game.getNumberOfPowerPills()));
-       vals.add((T) t.discretizeNumberOfPills(game.getNumberOfActivePowerPills()));
-
-       //BLINKY
-       if(game.isGhostEdible(Constants.GHOST.BLINKY))
-           vals.add((T) DiscreteValues.TRUE);
-       else
-           vals.add((T) DiscreteValues.FALSE);
-       vals.add(
-               (T) t.discretizeDistance(
-                       game.getShortestPathDistance(
-                               game.getPacmanCurrentNodeIndex()
-                               ,game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY)))
-       );
-       vals.add((T) parseMove(game.getGhostLastMoveMade(Constants.GHOST.BLINKY)));
-
-        //INKY
-        if(game.isGhostEdible(Constants.GHOST.INKY))
-            vals.add((T) DiscreteValues.TRUE);
-        else
-            vals.add((T) DiscreteValues.FALSE);
-        vals.add(
-                (T) t.discretizeDistance(
-                        game.getShortestPathDistance(
-                                game.getPacmanCurrentNodeIndex()
-                                ,game.getGhostCurrentNodeIndex(Constants.GHOST.INKY)))
-        );
-        vals.add((T) parseMove(game.getGhostLastMoveMade(Constants.GHOST.INKY)));
-
-        //PINKY
-        if(game.isGhostEdible(Constants.GHOST.PINKY))
-            vals.add((T) DiscreteValues.TRUE);
-        else
-            vals.add((T) DiscreteValues.FALSE);
-        vals.add(
-                (T) t.discretizeDistance(
-                        game.getShortestPathDistance(
-                                game.getPacmanCurrentNodeIndex()
-                                ,game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY)))
-        );
-        vals.add((T) parseMove(game.getGhostLastMoveMade(Constants.GHOST.PINKY)));
-
-        //SUE
-        if(game.isGhostEdible(Constants.GHOST.SUE))
-            vals.add((T) DiscreteValues.TRUE);
-        else
-            vals.add((T) DiscreteValues.FALSE);
-        vals.add(
-                (T) t.discretizeDistance(
-                        game.getShortestPathDistance(
-                                game.getPacmanCurrentNodeIndex()
-                                ,game.getGhostCurrentNodeIndex(Constants.GHOST.SUE)))
-        );
-        vals.add((T) parseMove(game.getGhostLastMoveMade(Constants.GHOST.SUE)));
-
-        vals.add((T) DiscreteValues.DOWN); //dummy value
-
-
-
-        game.getNumberOfPowerPills();
-        game.getNumberOfActivePowerPills();
-
-        tuple[0] = columns;
-        tuple[1] = vals;
-
-        System.out.println();
-        return tuple;
-    }
 
     protected void loadRecordedData() {
         DataTuple[] pacManData= DataSaverLoader.LoadPacManData();
         //Create headers for columns
         ArrayList<T> tuple = new ArrayList<>();
-        tuple.add((T) DiscreteValues.PILLS_IN_LEVEL);
-        tuple.add((T) DiscreteValues.PILLS_LEFT);
-        tuple.add((T) DiscreteValues.POWER_PILLS_IN_LEVEL);
-        tuple.add((T) DiscreteValues.POWER_PILLS_LEFT);
-        tuple.add((T) DiscreteValues.BLINKY_EDIBLE);
-        tuple.add((T) DiscreteValues.BLINKY_DISTANCE);
-        tuple.add((T) DiscreteValues.BLINKY_DIRECTION);
-        tuple.add((T) DiscreteValues.INKY_EDIBLE);
-        tuple.add((T) DiscreteValues.INKY_DISTANCE);
-        tuple.add((T) DiscreteValues.INKY_DIRECTION);
-        tuple.add((T) DiscreteValues.PINKY_EDIBLE);
-        tuple.add((T) DiscreteValues.PINKY_DISTANCE);
-        tuple.add((T) DiscreteValues.PINKY_DIRECTION);
-        tuple.add((T) DiscreteValues.SUE_EDIBLE);
-        tuple.add((T) DiscreteValues.SUE_DISTANCE);
-        tuple.add((T) DiscreteValues.SUE_DIRECTION);
+        tuple.add((T) DiscreteValues.GHOST_DISTANCE);
+        tuple.add((T) DiscreteValues.GHOST_DIRECTION);
+        tuple.add((T) DiscreteValues.PILL_DISTANCE);
+        tuple.add((T) DiscreteValues.DIRECTION_TO_PILL);
         tuple.add((T) DiscreteValues.CLASS);        //MUST BE LAST!!
 
 
@@ -236,63 +116,36 @@ public class DataTable <T> implements Cloneable {
          */
         for(int i =0;i<pacManData.length;i++){
             tuple.clear();
-            T data = (T) pacManData[i].discretizeNumberOfPills(pacManData[i].numberOfTotalPillsInLevel);
-            tuple.add(data);
-            data = (T) pacManData[i].discretizeNumberOfPills(pacManData[i].numOfPillsLeft);
-            tuple.add(data);
-            data = (T) pacManData[i].discretizeNumberOfPills(pacManData[i].numberOfTotalPowerPillsInLevel);
-            tuple.add(data);
-            data = (T) pacManData[i].discretizeNumberOfPills(pacManData[i].numOfPowerPillsLeft);
-            tuple.add(data);
 
-            //BLINKY
-            if(pacManData[i].isBlinkyEdible)
-                data = (T) DiscreteValues.TRUE;
-            else
-                data = (T) DiscreteValues.FALSE;
-            tuple.add(data);
-            data = (T) pacManData[i].discretizeDistance(pacManData[i].blinkyDist);
-            tuple.add(data);
-            data = parseMove(pacManData[i].blinkyDir);
-            tuple.add(data);
+            //calculate closest ghost and its distance
+            Constants.MOVE closestGhostDir = pacManData[i].blinkyDir;
+            int closestGhostDistance = pacManData[i].blinkyDist;
+            if(pacManData[i].inkyDist<closestGhostDistance){
+                closestGhostDir = pacManData[i].inkyDir;
+                closestGhostDistance = pacManData[i].inkyDist;
+            }
+            if(pacManData[i].pinkyDist<closestGhostDistance){
+                closestGhostDir = pacManData[i].pinkyDir;
+                closestGhostDistance = pacManData[i].pinkyDist;
+            }
+            if(pacManData[i].sueDist<closestGhostDistance){
+                closestGhostDir = pacManData[i].sueDir;
+                closestGhostDistance = pacManData[i].sueDist;
+            }
+            //get discrete distance
+            tuple.add((T) pacManData[i].discretizeDistance(closestGhostDistance));
+            //get his direction
+            tuple.add(parseMove(closestGhostDir));
 
-            //INKY
-            if(pacManData[i].isInkyEdible)
-                data = (T) DiscreteValues.TRUE;
-            else
-                data = (T) DiscreteValues.FALSE;
-            tuple.add(data);
-            data = (T) pacManData[i].discretizeDistance(pacManData[i].inkyDist);
-            tuple.add(data);
-            data = parseMove(pacManData[i].inkyDir) ;
-            tuple.add(data);
+            //get pill distance
+            tuple.add((T) pacManData[i].discretizeDistance(pacManData[i].pillDist));
 
-            //PINKY
-            if(pacManData[i].isPinkyEdible)
-                data = (T) DiscreteValues.TRUE;
-            else
-                data = (T) DiscreteValues.FALSE;
-            tuple.add(data);
-            data = (T) pacManData[i].discretizeDistance(pacManData[i].pinkyDist);
-            tuple.add(data);
-            data = parseMove(pacManData[i].pinkyDir);
-            tuple.add(data);
+            //get direction to pill
+            Constants.MOVE moveToPill = pacManData[i].pillMove;
+            tuple.add(parseMove(pacManData[i].pillMove));
 
-            //INKY
-            if(pacManData[i].isSueEdible)
-                data = (T) DiscreteValues.TRUE;
-            else
-                data = (T) DiscreteValues.FALSE;
-            tuple.add(data);
-            data = (T) pacManData[i].discretizeDistance(pacManData[i].sueDist);
-            tuple.add(data);
-            data =  parseMove(pacManData[i].sueDir);
-            tuple.add(data);
-
-            //Class last
-            data  = parseMove(pacManData[i].DirectionChosen);
-            tuple.add(data);
-
+            //get class
+            tuple.add(parseMove(pacManData[i].DirectionChosen));
             addTuple(tuple);
         }
 
@@ -303,7 +156,7 @@ public class DataTable <T> implements Cloneable {
      * @param directionChosen : Constants.MOVE
      * @return direction : T
      */
-    private T parseMove(Constants.MOVE directionChosen) {
+    protected T parseMove(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
         T direction= null;
         switch (s){
@@ -319,6 +172,8 @@ public class DataTable <T> implements Cloneable {
             case "RIGHT":
                 direction = (T) DiscreteValues.RIGHT;
                 break;
+            case "NEUTRAL":
+                direction = (T) DiscreteValues.NEUTRAL;
         }
 
         return direction;
@@ -607,7 +462,7 @@ public class DataTable <T> implements Cloneable {
       T val =  majorityClassValue();
         LinkedList<T> attrList = getAttributeList();
         ArrayList<T>[] tuple = getTuple(1);
-        tuple =getTuple(new Game());
+     //   tuple =getTuple(new Game());
         DataTable<T>[] tables = splitTableForHoldout(this);
         //T label = getClassLabel(13);
      //   ArrayList<T> col = getColumn(this, (T) DiscreteValues.CREDIT_RATING);
