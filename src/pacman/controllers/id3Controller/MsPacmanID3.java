@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import static pacman.game.Constants.MOVE.*;
+
 /**AI controller based on ID3 decition tree algorithm
  *
  * Created by: Patrik Lind, 17-03-2018
@@ -19,7 +21,19 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
 
     @Override
     public Constants.MOVE getMove(Game game, long timeDue) {
-        return null;
+
+        T move = (T) classify(dataSet.getTuple(game),tree);
+        Constants.MOVE returnMove = null;
+        if(move == DataTable.DiscreteValues.UP)
+            returnMove = UP;
+        if(move == DataTable.DiscreteValues.DOWN)
+            returnMove = DOWN;
+        if(move == DataTable.DiscreteValues.LEFT)
+            returnMove  = LEFT;
+        if(move == DataTable.DiscreteValues.RIGHT)
+            returnMove = RIGHT;
+
+        return returnMove;
     }
 
     private DataTable dataSet;
@@ -32,7 +46,8 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
 
     public MsPacmanID3(){
         dataSet = new DataTable();
-        dataSet.loadExampleData(); //TODO call on correct method when rdy
+        //dataSet.loadExampleData(); //Hard coded example data in class DataTable
+        dataSet.loadRecordedData();
         DataTable<T>[] splitTables = dataSet.splitTableForHoldout(dataSet);
         attributeList = dataSet.getAttributeList();
        // dataSet = splitTables[0];
@@ -40,6 +55,7 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         tree = new Node().generateTree(splitTables[0],attributeList);
         System.out.println("### TREE BUILT\n\tAccuracy of tree:  "+getAccuracyOfTree(splitTables[1]));
 
+        System.out.println();
         //  Utilities.createGraph(tree);
 
     }
@@ -108,8 +124,6 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         protected boolean isLeaf = false;
         protected Node parent = null;
         protected ArrayList<Node> children = new ArrayList<>();
-        protected int edgeNbr =0;
-
 
         /**
          *
