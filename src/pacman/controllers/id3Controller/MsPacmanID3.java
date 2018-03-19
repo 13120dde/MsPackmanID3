@@ -60,7 +60,6 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         columns.add((T) DataTuple.DiscreteTag.DIRECTION_TO_PILL);
 
         GhostValues ghostValues = closestGhost(game);
-        System.out.println("\n\t\t--->Closest ghost: "+ghostValues.toString());
         T closestGhostDistance = ghostValues.distanceTag;
         T closestGhostDirection = (T) ghostValues.ghostDirection;
 
@@ -73,10 +72,16 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         Constants.MOVE pillMove = game.getNextMoveTowardsTarget(pacmanIndex,
                 pillIndex, Constants.DM.PATH);
 
+        T closestPillDistance = (T) dataSet.pillDistance(pillDist);
+        T directionToPill = (T) dataSet.parseMoveToPill(pillMove);
+        System.out.println("\n--->Closest ghost: "+ghostValues.toString());
+
+        System.out.println("\t===>Closest pill distance: "+closestPillDistance+", direction to: "+directionToPill);
+
         vals.add(closestGhostDistance);
         vals.add(closestGhostDirection);
-        vals.add((T) dataSet.pillDistance(pillDist));
-        vals.add((T) dataSet.parseMove(pillMove));
+        vals.add(closestPillDistance);
+        vals.add(directionToPill);
 
         tuple[0] = columns;
         tuple[1] = vals;
@@ -85,17 +90,17 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         T move = (T) classify(tuple,tree,timeDue);
         System.out.println("\t\t>>>>>>> Classified as:" +move.toString());
         Constants.MOVE returnMove = null;
-        if(move == DataTuple.DiscreteTag.UP)
+        if(move == DataTuple.DiscreteTag.CLASS_UP)
             returnMove = UP;
-        if(move == DataTuple.DiscreteTag.DOWN)
+        if(move == DataTuple.DiscreteTag.CLASS_DOWN)
             returnMove = DOWN;
-        if(move == DataTuple.DiscreteTag.LEFT)
+        if(move == DataTuple.DiscreteTag.CLASS_LEFT)
             returnMove  = LEFT;
-        if(move == DataTuple.DiscreteTag.RIGHT)
+        if(move == DataTuple.DiscreteTag.CLASS_RIGHT)
             returnMove = RIGHT;
 
-        return Constants.MOVE.LEFT;
-        //return returnMove;
+
+        return returnMove;
 
     }
 
@@ -106,28 +111,29 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         int pacmanIndex = game.getPacmanCurrentNodeIndex();
         int ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY);
         distances[0] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.BLINKY)));
+        moves.add((T) dataSet.parseMoveGhost( game.getGhostLastMoveMade(Constants.GHOST.BLINKY)));
         ghosts.add(new GhostValues(distances[0], Constants.GHOST.BLINKY,moves.get(0)));
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.INKY);
         distances[1] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.INKY)));
+        moves.add((T) dataSet.parseMoveGhost( game.getGhostLastMoveMade(Constants.GHOST.INKY)));
         ghosts.add(new GhostValues(distances[1], Constants.GHOST.INKY,moves.get(1)));
 
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY);
         distances[2]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.PINKY)));
+        moves.add((T) dataSet.parseMoveGhost( game.getGhostLastMoveMade(Constants.GHOST.PINKY)));
         ghosts.add(new GhostValues(distances[2], Constants.GHOST.PINKY,moves.get(2)));
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.SUE);
         distances[3]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.SUE)));
+        moves.add((T) dataSet.parseMoveGhost( game.getGhostLastMoveMade(Constants.GHOST.SUE)));
         ghosts.add(new GhostValues(distances[3], Constants.GHOST.SUE,moves.get(3)));
 
+        /*
         for (int i = 0;i<ghosts.size();i++){
             System.out.println(ghosts.get(i).toString());
-        }
+        }*/
 
         //sort ghosts
         Collections.sort(ghosts, new Comparator<GhostValues>() {
@@ -153,11 +159,11 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
 
     public MsPacmanID3(){
         dataSet = new DataTable();
-        //dataSet.loadExampleData(); //Hard coded example data in class DataTable
+      //  dataSet.loadExampleData(); //Hard coded example data in class DataTable
         dataSet.loadRecordedData();
         DataTable<T>[] splitTables = dataSet.splitTableForHoldout(dataSet);
         attributeList = dataSet.getAttributeList();
-       // dataSet = splitTables[0];
+
         selectionMethod = new AttributeSelection();
         tree = new Node().generateTree(splitTables[0],attributeList);
         System.out.println("### TREE BUILT\n\tAccuracy of tree:  "+getAccuracyOfTree(splitTables[1]));
@@ -189,6 +195,7 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
             if(classifiedAs.get(i)==classColumn.get(i+1))
                 rightClass++;
         }
+        System.out.println();
         return (double) rightClass/(size-1); //-1 to exclude column name
     }
 
@@ -205,16 +212,19 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
             int index = tuple[0].indexOf(label);
             T value = tuple[1].get(index);
 
+            T val = null;
             //check which child node has edge = value
-            for(int i = 0; i<node.children.size();i++){
+            for(int i = 0; i<node.children.size();i++) {
                 long currentTime = System.currentTimeMillis();
                 /*if( !gameOff && currentTime>=timeDue){
                     System.out.println("\t\t>>>>>time limit reached, returned: "+toReturn.toString());
                     break;
                 }*/
-                if(node.children.get(i).edge==value){
-                   toReturn= (T) classify(tuple, node.children.get(i), timeDue);
+                if (node.children.get(i).edge == value) {
+                    val = (T) classify(tuple, node.children.get(i), timeDue);
+                    break;
                 }
+                toReturn = val;
             }
             return toReturn;
         }

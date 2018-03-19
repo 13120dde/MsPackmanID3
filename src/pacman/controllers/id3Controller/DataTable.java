@@ -60,12 +60,12 @@ public class DataTable <T> implements Cloneable {
     protected void loadRecordedData() {
         DataTuple[] pacManData= DataSaverLoader.LoadPacManData();
         //Create headers for columns
-        ArrayList<T> tuple = new ArrayList<>();
-        tuple.add((T) DataTuple.DiscreteTag.GHOST_DISTANCE);
-        tuple.add((T) DataTuple.DiscreteTag.GHOST_DIRECTION);
-        tuple.add((T) DataTuple.DiscreteTag.PILL_DISTANCE);
-        tuple.add((T) DataTuple.DiscreteTag.DIRECTION_TO_PILL);
-        tuple.add((T) DataTuple.DiscreteTag.CLASS);        //MUST BE LAST!!
+        ArrayList tuple = new ArrayList<>();
+        tuple.add( DataTuple.DiscreteTag.PILL_DISTANCE);
+        tuple.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
+        tuple.add(DataTuple.DiscreteTag.GHOST_DISTANCE);
+        tuple.add(DataTuple.DiscreteTag.GHOST_DIRECTION);
+        tuple.add(DataTuple.DiscreteTag.CLASS);        //MUST BE LAST!!
 
 
         //insert headers
@@ -95,36 +95,35 @@ public class DataTable <T> implements Cloneable {
                 closestGhostDir = pacManData[i].sueDir;
                 closestGhostDistance = pacManData[i].sueDist;
             }
+
+            //get pill distanceTag
+            tuple.add( pillDistance(pacManData[i].pillDist) );
+            //get direction to pill
+            tuple.add(parseMoveToPill(pacManData[i].pillMove));
             //get discrete distanceTag
             tuple.add(ghostDistance(closestGhostDistance));
             //get his direction
-            tuple.add(parseMove(closestGhostDir));
+            tuple.add(parseMoveGhost(closestGhostDir));
 
-            //get pill distanceTag
-            tuple.add((T) pillDistance(pacManData[i].pillDist) );
-
-            //get direction to pill
-            Constants.MOVE moveToPill = pacManData[i].pillMove;
-            tuple.add(parseMove(pacManData[i].pillMove));
 
             //get class
-            tuple.add(parseMove(pacManData[i].DirectionChosen));
+            tuple.add(parseMoveClass(pacManData[i].DirectionChosen));
             addTuple(tuple);
         }
 
     }
 
-    protected T ghostDistance(int distance)
+    protected DataTuple.DiscreteTag ghostDistance(int distance)
     {
         if (distance < 20)
-            return (T) DataTuple.DiscreteTag.VERY_LOW;
+            return  DataTuple.DiscreteTag.VERY_LOW;
         if (distance < 40)
-            return (T) DataTuple.DiscreteTag.LOW;
+            return DataTuple.DiscreteTag.LOW;
         if (distance < 60)
-            return (T) DataTuple.DiscreteTag.MEDIUM;
+            return DataTuple.DiscreteTag.MEDIUM;
         if (distance < 100)
-            return (T) DataTuple.DiscreteTag.HIGH;
-        return (T) DataTuple.DiscreteTag.VERY_HIGH;
+            return DataTuple.DiscreteTag.HIGH;
+        return DataTuple.DiscreteTag.VERY_HIGH;
     }
 
     /**
@@ -132,15 +131,15 @@ public class DataTable <T> implements Cloneable {
      * @param distance the distanceTag
      * @return the discretized value
      */
-    protected T pillDistance(int distance)
+    protected DataTuple.DiscreteTag pillDistance(int distance)
     {
         if (distance < 10)
-            return (T) DataTuple.DiscreteTag.VERY_LOW;
+            return DataTuple.DiscreteTag.VERY_LOW;
         if (distance < 20)
-            return (T) DataTuple.DiscreteTag.LOW;
+            return DataTuple.DiscreteTag.LOW;
         if (distance < 50)
-            return (T) DataTuple.DiscreteTag.MEDIUM;
-        return (T) DataTuple.DiscreteTag.HIGH;
+            return DataTuple.DiscreteTag.MEDIUM;
+        return  DataTuple.DiscreteTag.HIGH;
     }
 
     /**Parse the input to enum of the type of this class and returns it as T.
@@ -148,24 +147,63 @@ public class DataTable <T> implements Cloneable {
      * @param directionChosen : Constants.MOVE
      * @return direction : T
      */
-    protected T parseMove(Constants.MOVE directionChosen) {
+    protected DataTuple.DiscreteTag parseMoveClass(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
-        T direction= null;
+        DataTuple.DiscreteTag direction= null;
         switch (s){
             case "UP":
-                direction = (T) DataTuple.DiscreteTag.UP;
+                direction = DataTuple.DiscreteTag.CLASS_UP;
                 break;
             case "DOWN":
-                direction = (T) DataTuple.DiscreteTag.DOWN;
+                direction =  DataTuple.DiscreteTag.CLASS_DOWN;
                 break;
             case "LEFT":
-                direction = (T) DataTuple.DiscreteTag.LEFT;
+                direction = DataTuple.DiscreteTag.CLASS_LEFT;
                 break;
             case "RIGHT":
-                direction = (T) DataTuple.DiscreteTag.RIGHT;
+                direction = DataTuple.DiscreteTag.CLASS_RIGHT;
+        }
+
+        return direction;
+    }
+    protected DataTuple.DiscreteTag parseMoveGhost(Constants.MOVE directionChosen) {
+        final String s = directionChosen.name().toUpperCase();
+        DataTuple.DiscreteTag direction= null;
+        switch (s){
+            case "UP":
+                direction = DataTuple.DiscreteTag.GHOST_MOVE_UP;
+                break;
+            case "DOWN":
+                direction = DataTuple.DiscreteTag.GHOST_MOVE_DOWN;
+                break;
+            case "LEFT":
+                direction = DataTuple.DiscreteTag.GHOST_MOVE_LEFT;
+                break;
+            case "RIGHT":
+                direction = DataTuple.DiscreteTag.GHOST_MOVE_RIGHT;
                 break;
             case "NEUTRAL":
-                direction = (T) DataTuple.DiscreteTag.NEUTRAL;
+                direction = DataTuple.DiscreteTag.GHOST_MOVE_NEUTRAL;
+        }
+
+        return direction;
+    }
+    protected DataTuple.DiscreteTag parseMoveToPill(Constants.MOVE directionChosen) {
+        final String s = directionChosen.name().toUpperCase();
+        DataTuple.DiscreteTag direction= null;
+        switch (s){
+            case "UP":
+                direction = DataTuple.DiscreteTag.TO_PILL_UP;
+                break;
+            case "DOWN":
+                direction = DataTuple.DiscreteTag.TO_PILL_DOWN;
+                break;
+            case "LEFT":
+                direction = DataTuple.DiscreteTag.TO_PILL_LEFT;
+                break;
+            case "RIGHT":
+                direction = DataTuple.DiscreteTag.TO_PILL_RIGHT;
+
         }
 
         return direction;
@@ -466,90 +504,90 @@ public class DataTable <T> implements Cloneable {
 
     //Temp for testing
     protected void loadExampleData() {
- /*       ArrayList a1 = new ArrayList();
-        a1.add(DiscreteValues.AGE);
-        a1.add(DiscreteValues.YOUTH);
-        a1.add(DiscreteValues.YOUTH);
-        a1.add(DiscreteValues.MIDDLE_AGED);
-        a1.add(DiscreteValues.SENIOR);
-        a1.add(DiscreteValues.SENIOR);
-        a1.add(DiscreteValues.SENIOR);
-        a1.add(DiscreteValues.MIDDLE_AGED);
-        a1.add(DiscreteValues.YOUTH);
-        a1.add(DiscreteValues.YOUTH);
-        a1.add(DiscreteValues.SENIOR);
-        a1.add(DiscreteValues.MIDDLE_AGED);
-        a1.add(DiscreteValues.YOUTH);
-        a1.add(DiscreteValues.MIDDLE_AGED);
-        a1.add(DiscreteValues.SENIOR);
+       ArrayList a1 = new ArrayList();
+        a1.add(DataTuple.DiscreteTag.AGE);
+        a1.add(DataTuple.DiscreteTag.YOUTH);
+        a1.add(DataTuple.DiscreteTag.YOUTH);
+        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        a1.add(DataTuple.DiscreteTag.SENIOR);
+        a1.add(DataTuple.DiscreteTag.SENIOR);
+        a1.add(DataTuple.DiscreteTag.SENIOR);
+        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        a1.add(DataTuple.DiscreteTag.YOUTH);
+        a1.add(DataTuple.DiscreteTag.YOUTH);
+        a1.add(DataTuple.DiscreteTag.SENIOR);
+        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        a1.add(DataTuple.DiscreteTag.YOUTH);
+        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        a1.add(DataTuple.DiscreteTag.SENIOR);
 
         ArrayList a2 = new ArrayList();
-        a2.add(DiscreteValues.INCOME);
-        a2.add(DiscreteValues.HIGH);
-        a2.add(DiscreteValues.HIGH);
-        a2.add(DiscreteValues.HIGH);
-        a2.add(DiscreteValues.MEDIUM);
-        a2.add(DiscreteValues.LOW);
-        a2.add(DiscreteValues.LOW);
-        a2.add(DiscreteValues.LOW);
-        a2.add(DiscreteValues.MEDIUM);
-        a2.add(DiscreteValues.LOW);
-        a2.add(DiscreteValues.MEDIUM);
-        a2.add(DiscreteValues.MEDIUM);
-        a2.add(DiscreteValues.MEDIUM);
-        a2.add(DiscreteValues.HIGH);
-        a2.add(DiscreteValues.MEDIUM);
+        a2.add(DataTuple.DiscreteTag.INCOME);
+        a2.add(DataTuple.DiscreteTag.HIGH);
+        a2.add(DataTuple.DiscreteTag.HIGH);
+        a2.add(DataTuple.DiscreteTag.HIGH);
+        a2.add(DataTuple.DiscreteTag.MEDIUM);
+        a2.add(DataTuple.DiscreteTag.LOW);
+        a2.add(DataTuple.DiscreteTag.LOW);
+        a2.add(DataTuple.DiscreteTag.LOW);
+        a2.add(DataTuple.DiscreteTag.MEDIUM);
+        a2.add(DataTuple.DiscreteTag.LOW);
+        a2.add(DataTuple.DiscreteTag.MEDIUM);
+        a2.add(DataTuple.DiscreteTag.MEDIUM);
+        a2.add(DataTuple.DiscreteTag.MEDIUM);
+        a2.add(DataTuple.DiscreteTag.HIGH);
+        a2.add(DataTuple.DiscreteTag.MEDIUM);
 
         ArrayList a3 = new ArrayList();
-        a3.add(DiscreteValues.STUDENT);
-        a3.add(DiscreteValues.NO);
-        a3.add(DiscreteValues.NO);
-        a3.add(DiscreteValues.NO);
-        a3.add(DiscreteValues.NO);
-        a3.add(DiscreteValues.YES);
-        a3.add(DiscreteValues.YES);
-        a3.add(DiscreteValues.YES);
-        a3.add(DiscreteValues.NO);
-        a3.add(DiscreteValues.YES);
-        a3.add(DiscreteValues.YES);
-        a3.add(DiscreteValues.YES);
-        a3.add(DiscreteValues.NO);
-        a3.add(DiscreteValues.YES);
-        a3.add(DiscreteValues.NO);
+        a3.add(DataTuple.DiscreteTag.STUDENT);
+        a3.add(DataTuple.DiscreteTag.NO);
+        a3.add(DataTuple.DiscreteTag.NO);
+        a3.add(DataTuple.DiscreteTag.NO);
+        a3.add(DataTuple.DiscreteTag.NO);
+        a3.add(DataTuple.DiscreteTag.YES);
+        a3.add(DataTuple.DiscreteTag.YES);
+        a3.add(DataTuple.DiscreteTag.YES);
+        a3.add(DataTuple.DiscreteTag.NO);
+        a3.add(DataTuple.DiscreteTag.YES);
+        a3.add(DataTuple.DiscreteTag.YES);
+        a3.add(DataTuple.DiscreteTag.YES);
+        a3.add(DataTuple.DiscreteTag.NO);
+        a3.add(DataTuple.DiscreteTag.YES);
+        a3.add(DataTuple.DiscreteTag.NO);
 
         ArrayList a4 = new ArrayList();
-        a4.add(DiscreteValues.CREDIT_RATING);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.EXCELLENT);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.EXCELLENT);
-        a4.add(DiscreteValues.EXCELLENT);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.EXCELLENT);
-        a4.add(DiscreteValues.EXCELLENT);
-        a4.add(DiscreteValues.FAIR);
-        a4.add(DiscreteValues.EXCELLENT);
+        a4.add(DataTuple.DiscreteTag.CREDIT_RATING);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.EXCELLENT);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.EXCELLENT);
+        a4.add(DataTuple.DiscreteTag.EXCELLENT);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.EXCELLENT);
+        a4.add(DataTuple.DiscreteTag.EXCELLENT);
+        a4.add(DataTuple.DiscreteTag.FAIR);
+        a4.add(DataTuple.DiscreteTag.EXCELLENT);
 
         ArrayList a5 = new ArrayList();
-        a5.add(DiscreteValues.CLASS);
-        a5.add(DiscreteValues.NO);
-        a5.add(DiscreteValues.NO);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.NO);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.NO);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.YES);
-        a5.add(DiscreteValues.NO);
+        a5.add(DataTuple.DiscreteTag.CLASS);
+        a5.add(DataTuple.DiscreteTag.NO);
+        a5.add(DataTuple.DiscreteTag.NO);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.NO);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.NO);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.YES);
+        a5.add(DataTuple.DiscreteTag.NO);
 
 
         table.add(a1);
@@ -558,7 +596,7 @@ public class DataTable <T> implements Cloneable {
         table.add(a4);
         table.add(a5);
 
-        System.out.println(toString());*/
+        System.out.println(toString());
 
     }
 

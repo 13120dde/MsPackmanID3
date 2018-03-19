@@ -17,11 +17,32 @@ public class DataTuple {
 		GHOST_DIRECTION,
 
 		CLASS,
-		UP,
-		DOWN,
-		LEFT,
-		NEUTRAL,
-		RIGHT;
+		CLASS_LEFT,
+		CLASS_UP,
+		CLASS_DOWN,
+		CLASS_RIGHT,
+		TO_PILL_UP,
+		TO_PILL_DOWN,
+		TO_PILL_LEFT,
+		TO_PILL_RIGHT,
+		GHOST_MOVE_UP,
+		GHOST_MOVE_DOWN,
+		GHOST_MOVE_NEUTRAL,
+		GHOST_MOVE_LEFT,
+		GHOST_MOVE_RIGHT,
+
+		//Testing tree tags
+		NO,
+		YES,
+		EXCELLENT,
+		AGE,
+		FAIR,
+		CREDIT_RATING,
+		STUDENT,
+		INCOME,
+		SENIOR,
+		MIDDLE_AGED,
+		YOUTH;
 
 		public static DiscreteTag DiscretizeDouble(double aux) {
 			if (aux < 0.1)

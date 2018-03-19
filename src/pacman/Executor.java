@@ -86,8 +86,8 @@ public class Executor
 		 */
 		
 		//run game for data collection
-//		exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new Legacy2TheReckoning(),visual);
-		exec.runGameTimed(new MsPacmanID3<>(),new RandomGhosts(),visual);
+	//	exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new StarterGhosts(),visual);
+		exec.runGameTimed(new MsPacmanID3<>(),new StarterGhosts(),visual);
 	}
 	
     /**
