@@ -9,7 +9,19 @@ import pacman.game.Game;
 public class DataTuple {
 
 	public enum DiscreteTag {
-		VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, NONE;
+		VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, NONE,
+		//Column names
+		PILL_DISTANCE,
+		DIRECTION_TO_PILL,
+		GHOST_DISTANCE,
+		GHOST_DIRECTION,
+
+		CLASS,
+		UP,
+		DOWN,
+		LEFT,
+		NEUTRAL,
+		RIGHT;
 
 		public static DiscreteTag DiscretizeDouble(double aux) {
 			if (aux < 0.1)

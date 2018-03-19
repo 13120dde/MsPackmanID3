@@ -19,47 +19,10 @@ import java.util.LinkedList;
 public class DataTable <T> implements Cloneable {
     //int, MOVE , DiscreteTag, bool
     protected ArrayList<ArrayList<T>> table;
+    protected T edgeLabel;
 
 
 
-    //All the discrete values that can be stored in the table, both values and column names.
-    protected enum DiscreteValues {
-        //temp values for testing
-        YOUTH,
-        MIDDLE_AGED,
-        SENIOR,
-        HIGH,
-        MEDIUM,
-        LOW,
-        NO,
-        YES,
-        FAIR,
-        EXCELLENT,
-        AGE,
-        INCOME,
-        STUDENT,
-        CREDIT_RATING,
-
-        //Column names
-        PILL_DISTANCE,
-        DIRECTION_TO_PILL,
-        GHOST_DISTANCE,
-        GHOST_DIRECTION,
-
-        CLASS,
-
-        //Values
-        DISTANCE_LOW,
-        DISTANCE_MEDIUM,
-        DISTANCE_HIGH,
-        DISTANCE_VERY_HIGH,
-        UP,
-        DOWN,
-        LEFT,
-        NEUTRAL, RIGHT
-
-
-    }
 
     /**Adds a tuple to the table, if the table have less columns than the tuple additional column will be
      * initiated
@@ -98,11 +61,11 @@ public class DataTable <T> implements Cloneable {
         DataTuple[] pacManData= DataSaverLoader.LoadPacManData();
         //Create headers for columns
         ArrayList<T> tuple = new ArrayList<>();
-        tuple.add((T) DiscreteValues.GHOST_DISTANCE);
-        tuple.add((T) DiscreteValues.GHOST_DIRECTION);
-        tuple.add((T) DiscreteValues.PILL_DISTANCE);
-        tuple.add((T) DiscreteValues.DIRECTION_TO_PILL);
-        tuple.add((T) DiscreteValues.CLASS);        //MUST BE LAST!!
+        tuple.add((T) DataTuple.DiscreteTag.GHOST_DISTANCE);
+        tuple.add((T) DataTuple.DiscreteTag.GHOST_DIRECTION);
+        tuple.add((T) DataTuple.DiscreteTag.PILL_DISTANCE);
+        tuple.add((T) DataTuple.DiscreteTag.DIRECTION_TO_PILL);
+        tuple.add((T) DataTuple.DiscreteTag.CLASS);        //MUST BE LAST!!
 
 
         //insert headers
@@ -117,7 +80,7 @@ public class DataTable <T> implements Cloneable {
         for(int i =0;i<pacManData.length;i++){
             tuple.clear();
 
-            //calculate closest ghost and its distance
+            //calculate closest ghost and its distanceTag
             Constants.MOVE closestGhostDir = pacManData[i].blinkyDir;
             int closestGhostDistance = pacManData[i].blinkyDist;
             if(pacManData[i].inkyDist<closestGhostDistance){
@@ -132,13 +95,13 @@ public class DataTable <T> implements Cloneable {
                 closestGhostDir = pacManData[i].sueDir;
                 closestGhostDistance = pacManData[i].sueDist;
             }
-            //get discrete distance
-            tuple.add((T) pacManData[i].discretizeDistance(closestGhostDistance));
+            //get discrete distanceTag
+            tuple.add(ghostDistance(closestGhostDistance));
             //get his direction
             tuple.add(parseMove(closestGhostDir));
 
-            //get pill distance
-            tuple.add((T) pacManData[i].discretizeDistance(pacManData[i].pillDist));
+            //get pill distanceTag
+            tuple.add((T) pillDistance(pacManData[i].pillDist) );
 
             //get direction to pill
             Constants.MOVE moveToPill = pacManData[i].pillMove;
@@ -151,6 +114,35 @@ public class DataTable <T> implements Cloneable {
 
     }
 
+    protected T ghostDistance(int distance)
+    {
+        if (distance < 20)
+            return (T) DataTuple.DiscreteTag.VERY_LOW;
+        if (distance < 40)
+            return (T) DataTuple.DiscreteTag.LOW;
+        if (distance < 60)
+            return (T) DataTuple.DiscreteTag.MEDIUM;
+        if (distance < 100)
+            return (T) DataTuple.DiscreteTag.HIGH;
+        return (T) DataTuple.DiscreteTag.VERY_HIGH;
+    }
+
+    /**
+     * Discretize a distanceTag to a pill
+     * @param distance the distanceTag
+     * @return the discretized value
+     */
+    protected T pillDistance(int distance)
+    {
+        if (distance < 10)
+            return (T) DataTuple.DiscreteTag.VERY_LOW;
+        if (distance < 20)
+            return (T) DataTuple.DiscreteTag.LOW;
+        if (distance < 50)
+            return (T) DataTuple.DiscreteTag.MEDIUM;
+        return (T) DataTuple.DiscreteTag.HIGH;
+    }
+
     /**Parse the input to enum of the type of this class and returns it as T.
      *
      * @param directionChosen : Constants.MOVE
@@ -161,19 +153,19 @@ public class DataTable <T> implements Cloneable {
         T direction= null;
         switch (s){
             case "UP":
-                direction = (T) DiscreteValues.UP;
+                direction = (T) DataTuple.DiscreteTag.UP;
                 break;
             case "DOWN":
-                direction = (T) DiscreteValues.DOWN;
+                direction = (T) DataTuple.DiscreteTag.DOWN;
                 break;
             case "LEFT":
-                direction = (T) DiscreteValues.LEFT;
+                direction = (T) DataTuple.DiscreteTag.LEFT;
                 break;
             case "RIGHT":
-                direction = (T) DiscreteValues.RIGHT;
+                direction = (T) DataTuple.DiscreteTag.RIGHT;
                 break;
             case "NEUTRAL":
-                direction = (T) DiscreteValues.NEUTRAL;
+                direction = (T) DataTuple.DiscreteTag.NEUTRAL;
         }
 
         return direction;
@@ -474,7 +466,7 @@ public class DataTable <T> implements Cloneable {
 
     //Temp for testing
     protected void loadExampleData() {
-        ArrayList a1 = new ArrayList();
+ /*       ArrayList a1 = new ArrayList();
         a1.add(DiscreteValues.AGE);
         a1.add(DiscreteValues.YOUTH);
         a1.add(DiscreteValues.YOUTH);
@@ -566,7 +558,7 @@ public class DataTable <T> implements Cloneable {
         table.add(a4);
         table.add(a5);
 
-        System.out.println(toString());
+        System.out.println(toString());*/
 
     }
 
@@ -592,5 +584,13 @@ public class DataTable <T> implements Cloneable {
     }
 
 
+    public void printTuple(ArrayList<T>[] tuple) {
+        for(int i =0;i<tuple.length;i++){
+            for(T val : tuple[i]){
+                System.out.print(val+"\t\t");
+            }
+            System.out.println();
 
+        }
+    }
 }

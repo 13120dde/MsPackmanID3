@@ -5,8 +5,7 @@ import pacman.controllers.Controller;
 import pacman.game.Constants;
 import pacman.game.Game;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 
 import static pacman.game.Constants.MOVE.*;
 
@@ -18,6 +17,34 @@ import static pacman.game.Constants.MOVE.*;
  */
 public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
 
+    private class GhostValues{
+        T distanceTag;
+        T ghostDirection;
+        int distance;
+        Constants.GHOST ghost;
+
+
+        /**
+         *
+         * @param distance
+         * @param ghost
+         * @param ghostDirections
+         */
+        public GhostValues(int distance, Constants.GHOST ghost, T ghostDirections) {
+            if(distance<0)
+                distance=Integer.MAX_VALUE;
+            this.distance= distance;
+            distanceTag = (T) dataSet.ghostDistance(distance);
+            this.ghost = ghost;
+            this.ghostDirection = ghostDirections;
+        }
+
+        public String toString(){
+            return ghost+", distance: "+distance+" = "+distanceTag+", move: "+ghostDirection;
+
+        }
+
+    }
     @Override
     public Constants.MOVE getMove(Game game, long timeDue) {
 
@@ -27,15 +54,18 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
         ArrayList<T> vals= new ArrayList<>();
 
         //Create headers for the tuple
-        columns.add((T) DataTable.DiscreteValues.GHOST_DISTANCE);
-        columns.add((T) DataTable.DiscreteValues.GHOST_DIRECTION);
-        columns.add((T) DataTable.DiscreteValues.PILL_DISTANCE);
-        columns.add((T) DataTable.DiscreteValues.DIRECTION_TO_PILL);
+        columns.add((T) DataTuple.DiscreteTag.GHOST_DISTANCE);
+        columns.add((T) DataTuple.DiscreteTag.GHOST_DIRECTION);
+        columns.add((T) DataTuple.DiscreteTag.PILL_DISTANCE);
+        columns.add((T) DataTuple.DiscreteTag.DIRECTION_TO_PILL);
 
-        T closestGhostDistance = getClosestGhostDistance(game);
-        T closestGhostDirection= getClosestGhostDirection(game);
+        GhostValues ghostValues = closestGhost(game);
+        System.out.println("\n\t\t--->Closest ghost: "+ghostValues.toString());
+        T closestGhostDistance = ghostValues.distanceTag;
+        T closestGhostDirection = (T) ghostValues.ghostDirection;
 
 
+        //TODO debugg pillDistances- probably wrong dist/move
         int pacmanIndex = game.getPacmanCurrentNodeIndex();
         int pillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
                 game.getActivePillsIndices(), Constants.DM.PATH);
@@ -45,98 +75,72 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
 
         vals.add(closestGhostDistance);
         vals.add(closestGhostDirection);
-        vals.add((T) new DataTuple(game, Constants.MOVE.UP).discretizeDistance(pillDist));
+        vals.add((T) dataSet.pillDistance(pillDist));
         vals.add((T) dataSet.parseMove(pillMove));
 
         tuple[0] = columns;
         tuple[1] = vals;
-
+    //    dataSet.printTuple(tuple);
 
         T move = (T) classify(tuple,tree,timeDue);
+        System.out.println("\t\t>>>>>>> Classified as:" +move.toString());
         Constants.MOVE returnMove = null;
-        if(move == DataTable.DiscreteValues.UP)
+        if(move == DataTuple.DiscreteTag.UP)
             returnMove = UP;
-        if(move == DataTable.DiscreteValues.DOWN)
+        if(move == DataTuple.DiscreteTag.DOWN)
             returnMove = DOWN;
-        if(move == DataTable.DiscreteValues.LEFT)
+        if(move == DataTuple.DiscreteTag.LEFT)
             returnMove  = LEFT;
-        if(move == DataTable.DiscreteValues.RIGHT)
+        if(move == DataTuple.DiscreteTag.RIGHT)
             returnMove = RIGHT;
 
-        return returnMove;
+        return Constants.MOVE.LEFT;
+        //return returnMove;
 
     }
 
-    private T getClosestGhostDistance(Game game) {
+    private GhostValues closestGhost(Game game){
+        ArrayList<GhostValues> ghosts = new ArrayList<>();
         int[] distances = new int[4];
+        ArrayList<T> moves = new ArrayList();
         int pacmanIndex = game.getPacmanCurrentNodeIndex();
         int ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY);
         distances[0] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.BLINKY)));
+        ghosts.add(new GhostValues(distances[0], Constants.GHOST.BLINKY,moves.get(0)));
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.INKY);
         distances[1] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.INKY)));
+        ghosts.add(new GhostValues(distances[1], Constants.GHOST.INKY,moves.get(1)));
+
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY);
         distances[2]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.PINKY)));
+        ghosts.add(new GhostValues(distances[2], Constants.GHOST.PINKY,moves.get(2)));
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.SUE);
         distances[3]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        moves.add((T) dataSet.parseMove( game.getGhostLastMoveMade(Constants.GHOST.SUE)));
+        ghosts.add(new GhostValues(distances[3], Constants.GHOST.SUE,moves.get(3)));
 
-
-        int closestDistance = Integer.MAX_VALUE;
-        for(int i =0 ; i<4;i++){
-            if(distances[i]>closestDistance)
-                closestDistance = distances[i];
+        for (int i = 0;i<ghosts.size();i++){
+            System.out.println(ghosts.get(i).toString());
         }
 
-        return (T) new DataTuple(game, Constants.MOVE.NEUTRAL).discretizeDistance(closestDistance);
+        //sort ghosts
+        Collections.sort(ghosts, new Comparator<GhostValues>() {
+
+            @Override
+            public int compare(GhostValues o1, GhostValues o2) {
+                return Integer.compare(o1.distance, o2.distance);
+            }
+        });
+
+        return ghosts.get(0);
     }
 
-    private T getClosestGhostDirection(Game game) {
-        int[] distances = new int[4];
-        int pacmanIndex = game.getPacmanCurrentNodeIndex();
-        int ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY);
-        distances[0] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-
-        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.INKY);
-        distances[1] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-
-        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY);
-        distances[2]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-
-        ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.SUE);
-        distances[3]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-
-
-        int closestDistance = Integer.MAX_VALUE;
-        for(int i =0 ; i<4;i++){
-            if(distances[i]<closestDistance)
-                closestDistance = i;
-        }
-
-        Constants.MOVE ghostMove = null;
-        switch (closestDistance){
-            case 0:
-                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.BLINKY);
-                 break;
-
-            case 1:
-                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.INKY);
-                 break;
-
-            case 2:
-                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.PINKY);
-                 break;
-
-            case 3:
-                 ghostMove =game.getGhostLastMoveMade(Constants.GHOST.SUE);
-                 break;
-
-
-        }
-
-        return (T) dataSet.parseMove(ghostMove);
-    }
 
     private DataTable dataSet;
     private LinkedList<T> attributeList;
@@ -169,7 +173,7 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
      */
     private double getAccuracyOfTree(DataTable<T> splittable) {
         ArrayList<T> classifiedAs = new ArrayList<>();
-        ArrayList<T> classColumn = splittable.getColumn(splittable, (T) DataTable.DiscreteValues.CLASS);
+        ArrayList<T> classColumn = splittable.getColumn(splittable, (T) DataTuple.DiscreteTag.CLASS);
 
         splittable.table.remove(splittable.table.size()-1); //Remove the classifier column
         int size = classColumn.size();
@@ -254,6 +258,7 @@ public class MsPacmanID3  <T> extends Controller<Constants.MOVE>{
             else if(attributeList.isEmpty()){
                 node.isLeaf = true;
                 node.label = dataSet.majorityClassValue();
+
                 System.out.println("\t Attribute list is empty: "+node.label.toString());
                 return node;
             }else{
