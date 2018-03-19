@@ -30,19 +30,11 @@ public class DataTuple {
 		GHOST_MOVE_NEUTRAL,
 		GHOST_MOVE_LEFT,
 		GHOST_MOVE_RIGHT,
+		GHOST_EDIBLE,
+		EDIBLE_TRUE,
+		EDIBLE_FALSE;
 
-		//Testing tree tags
-		NO,
-		YES,
-		EXCELLENT,
-		AGE,
-		FAIR,
-		CREDIT_RATING,
-		STUDENT,
-		INCOME,
-		SENIOR,
-		MIDDLE_AGED,
-		YOUTH;
+
 
 		public static DiscreteTag DiscretizeDouble(double aux) {
 			if (aux < 0.1)

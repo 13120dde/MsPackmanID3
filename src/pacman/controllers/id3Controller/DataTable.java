@@ -14,14 +14,10 @@ import java.util.LinkedList;
  *
  * Created by: Patrik Lind, 17-03-2018
  *
- * @param <T>
+ * @param
  */
-public class DataTable <T> implements Cloneable {
-    //int, MOVE , DiscreteTag, bool
-    protected ArrayList<ArrayList<T>> table;
-    protected T edgeLabel;
-
-
+public class DataTable implements Cloneable {
+    protected ArrayList<ArrayList<DataTuple.DiscreteTag>> table;
 
 
     /**Adds a tuple to the table, if the table have less columns than the tuple additional column will be
@@ -29,10 +25,10 @@ public class DataTable <T> implements Cloneable {
      *
      * @param tuple : ArrayList<T>
      */
-    private void addTuple(ArrayList<T> tuple) {
+    private void addTuple(ArrayList<DataTuple.DiscreteTag> tuple) {
         for(int i = 0; i<tuple.size(); i++){
             if(table.size()<i+1){
-                table.add(i,new ArrayList<T>());
+                table.add(i,new ArrayList<DataTuple.DiscreteTag>());
             }
             table.get(i).add(tuple.get(i));
         }
@@ -43,16 +39,16 @@ public class DataTable <T> implements Cloneable {
      * TODO make this method more dynamic, no hard coding!
      */
 
-    protected  <T> ArrayList<T>[] getTuple(int i) {
+    protected  ArrayList<DataTuple.DiscreteTag>[] getTuple(int i) {
         if(i<0 || i>=table.get(0).size())
             return null;
 
-        ArrayList<T>[] tuple = new ArrayList[2];
-        tuple[0] = new ArrayList<T>();
-        tuple[1] = new ArrayList<T>();
+        ArrayList<DataTuple.DiscreteTag>[] tuple = new ArrayList[2];
+        tuple[0] = new ArrayList<>();
+        tuple[1] = new ArrayList<>();
         for (int j = 0; j<table.size();j++){
-            tuple[0].add((T) table.get(j).get(0));
-            tuple[1].add((T) table.get(j).get(i));
+            tuple[0].add(table.get(j).get(0));
+            tuple[1].add(table.get(j).get(i));
         }
         return tuple;
     }
@@ -60,11 +56,12 @@ public class DataTable <T> implements Cloneable {
     protected void loadRecordedData() {
         DataTuple[] pacManData= DataSaverLoader.LoadPacManData();
         //Create headers for columns
-        ArrayList tuple = new ArrayList<>();
+        ArrayList<DataTuple.DiscreteTag> tuple = new ArrayList<>();
         tuple.add( DataTuple.DiscreteTag.PILL_DISTANCE);
         tuple.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
         tuple.add(DataTuple.DiscreteTag.GHOST_DISTANCE);
         tuple.add(DataTuple.DiscreteTag.GHOST_DIRECTION);
+        tuple.add(DataTuple.DiscreteTag.GHOST_EDIBLE);
         tuple.add(DataTuple.DiscreteTag.CLASS);        //MUST BE LAST!!
 
 
@@ -80,21 +77,32 @@ public class DataTable <T> implements Cloneable {
         for(int i =0;i<pacManData.length;i++){
             tuple.clear();
 
-            //calculate closest ghost and its distanceTag
+            //calculate closest ghost and its distanceTag & isEdible
+            boolean[] ghostsEdible = new boolean[4];
+            int indexToClosestGhost = 0;
             Constants.MOVE closestGhostDir = pacManData[i].blinkyDir;
             int closestGhostDistance = pacManData[i].blinkyDist;
             if(pacManData[i].inkyDist<closestGhostDistance){
                 closestGhostDir = pacManData[i].inkyDir;
                 closestGhostDistance = pacManData[i].inkyDist;
+                indexToClosestGhost=1;
             }
             if(pacManData[i].pinkyDist<closestGhostDistance){
                 closestGhostDir = pacManData[i].pinkyDir;
                 closestGhostDistance = pacManData[i].pinkyDist;
+                indexToClosestGhost=2;
+
             }
             if(pacManData[i].sueDist<closestGhostDistance){
                 closestGhostDir = pacManData[i].sueDir;
                 closestGhostDistance = pacManData[i].sueDist;
+                indexToClosestGhost=3;
+
             }
+            ghostsEdible[0] = pacManData[i].isBlinkyEdible;
+            ghostsEdible[1] = pacManData[i].isInkyEdible;
+            ghostsEdible[2] = pacManData[i].isPinkyEdible;
+            ghostsEdible[3] = pacManData[i].isSueEdible;
 
             //get pill distanceTag
             tuple.add( pillDistance(pacManData[i].pillDist) );
@@ -104,6 +112,11 @@ public class DataTable <T> implements Cloneable {
             tuple.add(ghostDistance(closestGhostDistance));
             //get his direction
             tuple.add(parseMoveGhost(closestGhostDir));
+            //get edible
+            if (ghostsEdible[indexToClosestGhost])
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
+            else
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
 
 
             //get class
@@ -115,6 +128,7 @@ public class DataTable <T> implements Cloneable {
 
     protected DataTuple.DiscreteTag ghostDistance(int distance)
     {
+
         if (distance < 20)
             return  DataTuple.DiscreteTag.VERY_LOW;
         if (distance < 40)
@@ -185,7 +199,6 @@ public class DataTable <T> implements Cloneable {
             case "NEUTRAL":
                 direction = DataTuple.DiscreteTag.GHOST_MOVE_NEUTRAL;
         }
-
         return direction;
     }
     protected DataTuple.DiscreteTag parseMoveToPill(Constants.MOVE directionChosen) {
@@ -210,7 +223,7 @@ public class DataTable <T> implements Cloneable {
     }
 
     public DataTable(){
-        table = new ArrayList<ArrayList<T>>();
+        table = new ArrayList<ArrayList<DataTuple.DiscreteTag>>();
 
     }
 
@@ -220,17 +233,17 @@ public class DataTable <T> implements Cloneable {
      * @return clone : DataTable<T>
      * @throws CloneNotSupportedException
      */
-    protected DataTable<T> clone() throws CloneNotSupportedException {
-        return (DataTable<T>) super.clone();
+    protected DataTable clone() throws CloneNotSupportedException {
+        return (DataTable) super.clone();
     }
 
     /**Returns all attributes in the table, i.e all column names except for the last one (CLASS).
      *
      * @return : LinkedList<T>
      */
-    protected LinkedList<T> getAttributeList() {
-        LinkedList<T> list = new LinkedList<>();
-        for(ArrayList<T> a : table){
+    protected LinkedList<DataTuple.DiscreteTag> getAttributeList() {
+        LinkedList<DataTuple.DiscreteTag> list = new LinkedList<>();
+        for(ArrayList<DataTuple.DiscreteTag> a : table){
             list.add(a.get(0));
         }
         //remove class column
@@ -254,7 +267,7 @@ public class DataTable <T> implements Cloneable {
      * @param i : int
      * @return classLabel : T
      */
-    protected T getClassLabel(int i) {
+    protected DataTuple.DiscreteTag getClassLabel(int i) {
         if(table.isEmpty())
             throw new IndexOutOfBoundsException("Table is empty");
         if(i<1)
@@ -262,7 +275,7 @@ public class DataTable <T> implements Cloneable {
         else if (i>=table.get(0).size())
             i = table.get(0).size()-1;
 
-        return (T) table.get(table.size()-1).get(i);
+        return table.get(table.size()-1).get(i);
     }
 
     /**Finds and returns all the unique values in a column (column name excluded).
@@ -270,11 +283,11 @@ public class DataTable <T> implements Cloneable {
      * @param column : ArrayList<T>
      * @return uniqueVals : ArrayList<T>
      */
-    protected ArrayList<T> getUniqueValsFromColumn(ArrayList<T> column){
-        ArrayList<T> uniqueVals = new ArrayList();
-        for(T value : column){
+    protected ArrayList<DataTuple.DiscreteTag> getUniqueValsFromColumn(ArrayList<DataTuple.DiscreteTag> column){
+        ArrayList<DataTuple.DiscreteTag> uniqueVals = new ArrayList();
+        for(DataTuple.DiscreteTag value : column){
             if (!uniqueVals.contains(value)){
-                uniqueVals.add((T) value);
+                uniqueVals.add(value);
             }
         }
         uniqueVals.remove(0);
@@ -303,15 +316,15 @@ public class DataTable <T> implements Cloneable {
      *
      * @return majorityValue : T
      */
-    protected T majorityClassValue() {
+    protected DataTuple.DiscreteTag majorityClassValue() {
 
-        ArrayList<T> classValues = table.get(table.size()-1);
-        T majorityValue = null;
-        ArrayList<T> uniqueVals = getUniqueValsFromColumn(table.get(table.size()-1));
+        ArrayList<DataTuple.DiscreteTag> classValues = table.get(table.size()-1);
+        DataTuple.DiscreteTag majorityValue = null;
+        ArrayList<DataTuple.DiscreteTag> uniqueVals = getUniqueValsFromColumn(table.get(table.size()-1));
         int[] indexOfHighestVals = new int[uniqueVals.size()];
 
         for(int j = 1; j<classValues.size();j++){
-            T value = classValues.get(j);
+            DataTuple.DiscreteTag value = classValues.get(j);
             for(int i =0; i<uniqueVals.size(); i++){
                 if(value==uniqueVals.get(i)){
                     indexOfHighestVals[i]++;
@@ -343,21 +356,21 @@ public class DataTable <T> implements Cloneable {
      * @param dataSet : DataTable
      * @return : paritionedTable : DataTable[]
      */
-    protected DataTable[] partitionSetOnAttributeValue(T columnLabel, DataTable dataSet) {
+    protected DataTable[] partitionSetOnAttributeValue(DataTuple.DiscreteTag columnLabel, DataTable dataSet) {
 
         //Find unique column values
-        ArrayList<T> column = dataSet.getColumn(dataSet,columnLabel);
+        ArrayList<DataTuple.DiscreteTag> column = dataSet.getColumn(dataSet,columnLabel);
         int index=0;
         for(int i =0; i<dataSet.table.size(); i++){
-            T col = column.get(0);
-            ArrayList<T> tab = (ArrayList<T>) dataSet.table.get(i);
+            DataTuple.DiscreteTag col = column.get(0);
+            ArrayList<DataTuple.DiscreteTag> tab =  dataSet.table.get(i);
             if(column.get(0)==tab.get(0)){
                 index=i;
                 break;
             }
         }
 
-        ArrayList uniqueVals = getUniqueValsFromColumn(table.get(index));
+        ArrayList<DataTuple.DiscreteTag> uniqueVals = getUniqueValsFromColumn(table.get(index));
         DataTable[] partitionedTable = new DataTable[uniqueVals.size()];
         for(int i = 0;i<partitionedTable.length;i++){
             partitionedTable[i]=new DataTable();
@@ -366,9 +379,9 @@ public class DataTable <T> implements Cloneable {
         //for each partition, remove unvalid tuples
         for(int i = 0; i<partitionedTable.length; i++){
          //   partitionedSets[i] = (DataTable) dataSet;
-            ArrayList<ArrayList<T>> table = (ArrayList<ArrayList<T>>) dataSet.table;
+            ArrayList<ArrayList<DataTuple.DiscreteTag>> table =  dataSet.table;
             int colSize = table.size();
-            ArrayList<ArrayList<T>> clonedTable= new ArrayList<ArrayList<T>>();
+            ArrayList<ArrayList<DataTuple.DiscreteTag>> clonedTable= new ArrayList<>();
 
             //Add column names
             for(int g = 0; g<colSize; g++){
@@ -382,12 +395,12 @@ public class DataTable <T> implements Cloneable {
                 //traverse row
                 int rowSize = table.get(j).size();
                 for(int k = 1 ; k<rowSize;k++){
-                    T val = table.get(j).get(k);
-                    T uniqueVal = (T) uniqueVals.get(i);
+                    DataTuple.DiscreteTag val = table.get(j).get(k);
+                    DataTuple.DiscreteTag uniqueVal = uniqueVals.get(i);
                     if(val==uniqueVal){
                         //add tuple to the partition i
                         for(int l=0; l<table.size();l++){
-                            T element = table.get(l).get(k);
+                            DataTuple.DiscreteTag element = table.get(l).get(k);
                             if(element!=columnLabel){
                                 clonedTable.get(l).add(element);
                             }
@@ -395,18 +408,18 @@ public class DataTable <T> implements Cloneable {
                     }
                 }
             }
-            partitionedTable[i].table= (ArrayList) clonedTable.clone();
+            partitionedTable[i].table=  clonedTable; //TODO .clone()??
 
         }
 
         //remove unwanted column (on which the partition occurs)
         for(int j =0;j<partitionedTable.length;j++){
 
-            ArrayList<T> columnToRemove = partitionedTable[j].getColumn(dataSet,columnLabel);
+            ArrayList<DataTuple.DiscreteTag> columnToRemove = partitionedTable[j].getColumn(dataSet,columnLabel);
             index=0;
             for(int i =0; i<dataSet.table.size(); i++){
-                T col = columnToRemove.get(0);
-                ArrayList<T> tab = (ArrayList<T>) dataSet.table.get(i);
+                DataTuple.DiscreteTag col = columnToRemove.get(0);
+                ArrayList<DataTuple.DiscreteTag> tab =  dataSet.table.get(i);
                 if(columnToRemove.get(0)==tab.get(0)){
                     index=i;
                     break;
@@ -426,10 +439,10 @@ public class DataTable <T> implements Cloneable {
      * @return column : ArratList<T>
      * @throws NullPointerException
      */
-    protected ArrayList<T> getColumn(DataTable dataSet,T attribute) throws NullPointerException{
-        ArrayList<T> column = null;
+    protected ArrayList<DataTuple.DiscreteTag> getColumn(DataTable dataSet,DataTuple.DiscreteTag attribute) throws NullPointerException{
+        ArrayList<DataTuple.DiscreteTag> column = null;
         for (int i = 0; i <dataSet.table.size(); i++){
-            ArrayList<T> a = (ArrayList<T>) dataSet.table.get(i);
+            ArrayList<DataTuple.DiscreteTag> a = dataSet.table.get(i);
             if(a.get(0)==attribute){
                 column = a;
             }
@@ -447,23 +460,23 @@ public class DataTable <T> implements Cloneable {
      * @return arr : DataSet[]
      * TODO
      */
-    public DataTable<T>[] splitTableForHoldout(DataTable dataSet) {
+    public DataTable[] splitTableForHoldout(DataTable dataSet) {
 
-        DataTable<T>[] arr = new DataTable[2];
-        arr[0] = new DataTable<>();
-        arr[1] = new DataTable<>();
+        DataTable[] arr = new DataTable[2];
+        arr[0] = new DataTable();
+        arr[1] = new DataTable();
         try {
-            DataTable<T> table = dataSet.clone();
+            DataTable table = dataSet.clone();
             int rows = table.table.get(0).size();
             for(int i =0;i<rows;i++){
                 if(i<= (int)rows*0.67){
-                    ArrayList<T>[] tuple = table.getTuple(i);
+                    ArrayList<DataTuple.DiscreteTag>[] tuple = table.getTuple(i);
                     arr[0].addTuple(tuple[1]);
                     if(i==0)
                         arr[1].addTuple(tuple[1]);
 
                 }else{
-                    ArrayList<T>[] tuple = table.getTuple(i);
+                    ArrayList<DataTuple.DiscreteTag>[] tuple = table.getTuple(i);
                     arr[1].addTuple(tuple[1]);
                 }
 
@@ -485,126 +498,29 @@ public class DataTable <T> implements Cloneable {
      */
     private void test() {
 
-        //loadExampleData();
         loadRecordedData();
         ArrayList a = getUniqueValsFromColumn(table.get(0));
-        everyTupleInSameClass();
-      T val =  majorityClassValue();
-        LinkedList<T> attrList = getAttributeList();
-        ArrayList<T>[] tuple = getTuple(1);
+       boolean flag = everyTupleInSameClass();
+        DataTuple.DiscreteTag val =  majorityClassValue();
+        LinkedList<DataTuple.DiscreteTag> attrList = getAttributeList();
+        ArrayList<DataTuple.DiscreteTag>[] tuple = getTuple(1);
      //   tuple =getTuple(new Game());
-        DataTable<T>[] tables = splitTableForHoldout(this);
+        DataTable[] tables = splitTableForHoldout(this);
         //T label = getClassLabel(13);
      //   ArrayList<T> col = getColumn(this, (T) DiscreteValues.CREDIT_RATING);
-       // DataTable[] tables =  partitionSetOnAttributeValue((T) DiscreteValues.INCOME,this);
+        DataTable[] tablesPartitioned =  partitionSetOnAttributeValue( DataTuple.DiscreteTag.GHOST_DIRECTION,this);
+        System.out.println();
 
     }
 
 
 
-    //Temp for testing
-    protected void loadExampleData() {
-       ArrayList a1 = new ArrayList();
-        a1.add(DataTuple.DiscreteTag.AGE);
-        a1.add(DataTuple.DiscreteTag.YOUTH);
-        a1.add(DataTuple.DiscreteTag.YOUTH);
-        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
-        a1.add(DataTuple.DiscreteTag.SENIOR);
-        a1.add(DataTuple.DiscreteTag.SENIOR);
-        a1.add(DataTuple.DiscreteTag.SENIOR);
-        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
-        a1.add(DataTuple.DiscreteTag.YOUTH);
-        a1.add(DataTuple.DiscreteTag.YOUTH);
-        a1.add(DataTuple.DiscreteTag.SENIOR);
-        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
-        a1.add(DataTuple.DiscreteTag.YOUTH);
-        a1.add(DataTuple.DiscreteTag.MIDDLE_AGED);
-        a1.add(DataTuple.DiscreteTag.SENIOR);
-
-        ArrayList a2 = new ArrayList();
-        a2.add(DataTuple.DiscreteTag.INCOME);
-        a2.add(DataTuple.DiscreteTag.HIGH);
-        a2.add(DataTuple.DiscreteTag.HIGH);
-        a2.add(DataTuple.DiscreteTag.HIGH);
-        a2.add(DataTuple.DiscreteTag.MEDIUM);
-        a2.add(DataTuple.DiscreteTag.LOW);
-        a2.add(DataTuple.DiscreteTag.LOW);
-        a2.add(DataTuple.DiscreteTag.LOW);
-        a2.add(DataTuple.DiscreteTag.MEDIUM);
-        a2.add(DataTuple.DiscreteTag.LOW);
-        a2.add(DataTuple.DiscreteTag.MEDIUM);
-        a2.add(DataTuple.DiscreteTag.MEDIUM);
-        a2.add(DataTuple.DiscreteTag.MEDIUM);
-        a2.add(DataTuple.DiscreteTag.HIGH);
-        a2.add(DataTuple.DiscreteTag.MEDIUM);
-
-        ArrayList a3 = new ArrayList();
-        a3.add(DataTuple.DiscreteTag.STUDENT);
-        a3.add(DataTuple.DiscreteTag.NO);
-        a3.add(DataTuple.DiscreteTag.NO);
-        a3.add(DataTuple.DiscreteTag.NO);
-        a3.add(DataTuple.DiscreteTag.NO);
-        a3.add(DataTuple.DiscreteTag.YES);
-        a3.add(DataTuple.DiscreteTag.YES);
-        a3.add(DataTuple.DiscreteTag.YES);
-        a3.add(DataTuple.DiscreteTag.NO);
-        a3.add(DataTuple.DiscreteTag.YES);
-        a3.add(DataTuple.DiscreteTag.YES);
-        a3.add(DataTuple.DiscreteTag.YES);
-        a3.add(DataTuple.DiscreteTag.NO);
-        a3.add(DataTuple.DiscreteTag.YES);
-        a3.add(DataTuple.DiscreteTag.NO);
-
-        ArrayList a4 = new ArrayList();
-        a4.add(DataTuple.DiscreteTag.CREDIT_RATING);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.EXCELLENT);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.EXCELLENT);
-        a4.add(DataTuple.DiscreteTag.EXCELLENT);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.EXCELLENT);
-        a4.add(DataTuple.DiscreteTag.EXCELLENT);
-        a4.add(DataTuple.DiscreteTag.FAIR);
-        a4.add(DataTuple.DiscreteTag.EXCELLENT);
-
-        ArrayList a5 = new ArrayList();
-        a5.add(DataTuple.DiscreteTag.CLASS);
-        a5.add(DataTuple.DiscreteTag.NO);
-        a5.add(DataTuple.DiscreteTag.NO);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.NO);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.NO);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.YES);
-        a5.add(DataTuple.DiscreteTag.NO);
-
-
-        table.add(a1);
-        table.add(a2);
-        table.add(a3);
-        table.add(a4);
-        table.add(a5);
-
-        System.out.println(toString());
-
-    }
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
         ArrayList<String> columnNames = new ArrayList<>();
-        for (ArrayList<T> col : table){
+        for (ArrayList<DataTuple.DiscreteTag> col : table){
             sb.append(col.get(0).toString()+", size: "+col.size()+", ");
         }
 
@@ -622,9 +538,9 @@ public class DataTable <T> implements Cloneable {
     }
 
 
-    public void printTuple(ArrayList<T>[] tuple) {
+    public void printTuple(ArrayList<DataTuple.DiscreteTag>[] tuple) {
         for(int i =0;i<tuple.length;i++){
-            for(T val : tuple[i]){
+            for(DataTuple.DiscreteTag val : tuple[i]){
                 System.out.print(val+"\t\t");
             }
             System.out.println();

@@ -63,7 +63,7 @@ public class Executor
 		
 		///*
 		//run the game in asynchronous mode.
-		boolean visual=true;
+		//boolean visual=true;
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
 //		exec.runGameTimed(new StarterPacMan(),new StarterGhosts(),visual);
 //		exec.runGameTimed(new HumanController(new KeyBoardInput()),new StarterGhosts(),visual);	
@@ -77,17 +77,15 @@ public class Executor
 		exec.runGameTimedSpeedOptimised(new RandomPacMan(),new RandomGhosts(),fixedTime,visual);
 		*/
 		
-		/*
 		//run game in asynchronous mode and record it to file for replay at a later stage.
 		boolean visual=true;
 		String fileName="replay.txt";
-		exec.runGameTimedRecorded(new HumanController(new KeyBoardInput()),new RandomGhosts(),visual,fileName);
-		//exec.replayGame(fileName,visual);
-		 */
-		
+		exec.runGameTimedRecorded(new MsPacmanID3(),new RandomGhosts(),visual,fileName);
+		exec.replayGame(fileName,visual);
+
 		//run game for data collection
-	//	exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new StarterGhosts(),visual);
-		exec.runGameTimed(new MsPacmanID3<>(),new StarterGhosts(),visual);
+		//exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new Legacy2TheReckoning(),visual);
+		//exec.runGameTimed(new MsPacmanID3(),new StarterGhosts(),visual);
 	}
 	
     /**

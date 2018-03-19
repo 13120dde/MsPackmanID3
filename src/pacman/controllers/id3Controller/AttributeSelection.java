@@ -1,5 +1,7 @@
 package pacman.controllers.id3Controller;
 
+import dataRecording.DataTuple;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -8,9 +10,9 @@ import java.util.LinkedList;
  *
  * Created by: Patrik Lind, 17-03-2018
  *
- * @param <T>
+ * @param
  */
-public class AttributeSelection<T> {
+public class AttributeSelection {
 
     /**Helper method, returns the first attribute in the list-
      *
@@ -18,7 +20,7 @@ public class AttributeSelection<T> {
      * @param attributeList
      * @return
      */
-    public T getSimpleAttribute(DataTable d, LinkedList<T> attributeList){
+    public DataTuple.DiscreteTag getSimpleAttribute(DataTable d, LinkedList<DataTuple.DiscreteTag> attributeList){
         return attributeList.removeFirst();
 
     }
@@ -31,15 +33,15 @@ public class AttributeSelection<T> {
      * @param attributeList : LinkedList
      * @return attribute : T
      */
-    public T id3(DataTable<T> dataTable, LinkedList attributeList) {
+    public DataTuple.DiscreteTag id3(DataTable dataTable, LinkedList attributeList) {
         System.out.println("### IN id3 ###");
-        T bestAttribute = null;
+        DataTuple.DiscreteTag bestAttribute = null;
         double averageEntropy;
 
         //calculate Info(D)
         averageEntropy = calculateEntropy(dataTable);
 
-        ArrayList<T> columns = new ArrayList<>(attributeList);
+        ArrayList<DataTuple.DiscreteTag> columns = new ArrayList<>(attributeList);
         double[] entropies = new double[columns.size()];
         double probabilityDenominator=dataTable.table.get(0).size()-1;
 
@@ -47,7 +49,7 @@ public class AttributeSelection<T> {
         for(int i = 0; i<columns.size();i++){
             //partition table on column values
             double entropy = 0;
-            DataTable<T>[] partitionedTables = dataTable.partitionSetOnAttributeValue(columns.get(i),dataTable);
+            DataTable[] partitionedTables = dataTable.partitionSetOnAttributeValue(columns.get(i),dataTable);
             for(int j = 0; j<partitionedTables.length;j++){
                 //calculate Dj
                 double probablilityNumerator = partitionedTables[j].table.get(0).size()-1;
@@ -75,12 +77,12 @@ public class AttributeSelection<T> {
     }
 
 
-    private double calculateEntropy(DataTable<T> dataTable) {
+    private double calculateEntropy(DataTable dataTable) {
         double entropy=0;
-        ArrayList<T> uniqueClasses = dataTable.getUniqueValsFromColumn(dataTable.table.get(dataTable.table.size()-1));
+        ArrayList<DataTuple.DiscreteTag> uniqueClasses = dataTable.getUniqueValsFromColumn(dataTable.table.get(dataTable.table.size()-1));
         double probabilityDenominator;
         double[] probabilityNumerators = new double[uniqueClasses.size()]; //amount of occurances of each class stored at index corresponding to uniqueClasses
-        ArrayList<T> classColumn = dataTable.table.get(dataTable.table.size()-1);
+        ArrayList<DataTuple.DiscreteTag> classColumn = dataTable.table.get(dataTable.table.size()-1);
         probabilityDenominator = classColumn.size()-1; //dont count column name
 
         //Info(D)
@@ -103,13 +105,12 @@ public class AttributeSelection<T> {
 
     //Just for testing
     public static void main(String[] args) {
-        new AttributeSelection<>().test();
+        new AttributeSelection().test();
     }
 
     private void test() {
-        DataTable<T> table = new DataTable<>();
-        table.loadExampleData();
-        LinkedList<T> attributes = table.getAttributeList();
-        T attribute= id3(table,attributes);
+        DataTable table = new DataTable();
+        LinkedList<DataTuple.DiscreteTag> attributes = table.getAttributeList();
+        DataTuple.DiscreteTag attribute= id3(table,attributes);
     }
 }
