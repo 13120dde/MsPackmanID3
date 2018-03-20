@@ -9,10 +9,10 @@ import java.util.*;
 
 import static pacman.game.Constants.MOVE.*;
 
-/**AI controller based on ID3 decition tree algorithm
+/**AI controller based on ID3 decision tree algorithm.
  *
  * Created by: Patrik Lind, 17-03-2018
- *
+ *TODO: add a save tree function in order to skip building the tree every time the game is started
  * @param
  */
 public class MsPacmanID3 extends Controller<Constants.MOVE>{
@@ -20,26 +20,33 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
     private DataTable dataSet;
     private LinkedList<DataTuple.DiscreteTag> attributeList;
-    private AttributeSelection selectionMethod;
+    private AttributeSelector selectionMethod;
 
     private boolean treeGenerated = false;
     private Node tree;
     private int nodeCount =0;
 
 
+    /**Instantiate the controller, builds a data table on raw data, builds the decision tree on the data table.
+     *
+     */
     public MsPacmanID3(){
         dataSet = new DataTable();
-        //dataSet.loadExampleData(); //Hard coded example data in class DataTable
         dataSet.loadRecordedData();
         DataTable[] splitTables = dataSet.splitTableForHoldout(dataSet);
         attributeList = dataSet.getAttributeList();
 
-        selectionMethod = new AttributeSelection();
+        selectionMethod = new AttributeSelector();
         tree = new Node();
-        tree = tree.generateTree(splitTables[0],attributeList);
-        treeGenerated =true;
-        getAccuracyOfTree(splitTables[1]);
-        System.out.println();
+        try {
+            tree = tree.generateTree(splitTables[0],attributeList);
+            treeGenerated =true;
+            getAccuracyOfTree(splitTables[1]);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         //  Utilities.createGraph(tree);
 
     }
@@ -51,7 +58,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
      * @param splittable : DataTable<T>
      * @return acc : double
      */
-    private void getAccuracyOfTree(DataTable splittable) {
+    private void getAccuracyOfTree(DataTable splittable) throws Exception {
         ArrayList<DataTuple.DiscreteTag> classifiedAs = new ArrayList<>();
         ArrayList<DataTuple.DiscreteTag> classColumn = splittable.getColumn(splittable, DataTuple.DiscreteTag.CLASS);
 
@@ -60,7 +67,6 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         for(int i =1;i<size;i++){
             ArrayList<DataTuple.DiscreteTag>[] tuple =  splittable.getTuple(i);
             if(tuple!=null){
-                //  classifiedAs.add(  classify(tuple,tree,0));
                 classifiedAs.add(classifyTuple(tuple));
             }
         }
@@ -75,7 +81,13 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
     }
 
-    public DataTuple.DiscreteTag classifyTuple(ArrayList<DataTuple.DiscreteTag>[] tuple){
+    /**Classifies the input parameter and returns the class value. The input parameter consist of two lists where the
+     * first holds the column names and the second holds the values in the column
+     *
+     * @param tuple : Double[ArrayList<DiscreteTag>][ArrayList<DiscreteTag>]
+     * @return
+     */
+    private DataTuple.DiscreteTag classifyTuple(ArrayList<DataTuple.DiscreteTag>[] tuple){
         DataTuple.DiscreteTag classifiedAs = null;
 
         LinkedList<Node> stack = new LinkedList<>();
@@ -103,7 +115,14 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         return classifiedAs;
     }
 
-    public DataTuple.DiscreteTag classify(ArrayList<DataTuple.DiscreteTag>[] tuple, Node node) {
+    /**A recursive alternative to above method.
+     * TODO: acess the correctness of this method.
+     *
+     * @param tuple
+     * @param node
+     * @return
+     */
+    private DataTuple.DiscreteTag classify(ArrayList<DataTuple.DiscreteTag>[] tuple, Node node) {
         DataTuple.DiscreteTag toReturn = null;
 
         if(node.isLeaf)
@@ -120,10 +139,9 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
             for(int i = 0; i<node.children.size();i++) {
 
                 if (node.children.get(i).edge == value) {
-                    val =  classify(tuple, node.children.get(i));
+                    toReturn =  classify(tuple, node.children.get(i));
                     break;
                 }
-                toReturn = val;
             }
             return toReturn;
         }
@@ -132,25 +150,26 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
     @Override
     public Constants.MOVE getMove(Game game, long timeDue) {
 
-
+        //create the data structure accepted by the classifyTuple(...)
         ArrayList<DataTuple.DiscreteTag>[] tuple = new ArrayList[2];
         ArrayList<DataTuple.DiscreteTag> columns = new ArrayList<>();
         ArrayList<DataTuple.DiscreteTag> vals= new ArrayList<>();
 
-        //Create headers for the tuple
+        /*Create headers for the tuple. Need to correspond to the headers in DataTable's loadRecordedData()
+        method, CLASS column excluded*/
         columns.add(DataTuple.DiscreteTag.PILL_DISTANCE);
         columns.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
         columns.add(DataTuple.DiscreteTag.GHOST_DISTANCE);
         columns.add(DataTuple.DiscreteTag.GHOST_DIRECTION);
         columns.add(DataTuple.DiscreteTag.GHOST_EDIBLE);
 
+        //Get values for closest ghost
         GhostValues ghostValues = closestGhost(game);
         DataTuple.DiscreteTag closestGhostDistance = ghostValues.distanceTag;
         DataTuple.DiscreteTag closestGhostDirection = ghostValues.ghostDirection;
         DataTuple.DiscreteTag ghostEdible = ghostValues.ghostEdible;
 
-
-        //TODO debugg pillDistances- probably wrong dist/move
+        //get values for closest pill
         int pacmanIndex = game.getPacmanCurrentNodeIndex();
         int pillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
                 game.getActivePillsIndices(), Constants.DM.PATH);
@@ -160,11 +179,10 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
         DataTuple.DiscreteTag closestPillDistance = dataSet.pillDistance(pillDist);
         DataTuple.DiscreteTag directionToPill = dataSet.parseMoveToPill(pillMove);
-        System.out.println("\n--->Closest ghost: "+ghostValues.toString());
 
-        System.out.println("\t===>Closest pill distance: "+closestPillDistance+", direction to: "+directionToPill);
 
-        //Add vals to tuple, need to hava as many as headers
+
+        //Add vals to tuple, need to have as many as headers
         vals.add(closestPillDistance);
         vals.add(directionToPill);
         vals.add(closestGhostDistance);
@@ -173,11 +191,10 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
         tuple[0] = columns;
         tuple[1] = vals;
-    //    dataSet.printTuple(tuple);
+
 
         DataTuple.DiscreteTag move =  classifyTuple(tuple);
         //DataTuple.DiscreteTag move =  classifyTuple(tuple);
-        System.out.println("\t\t>>>>>>> Classified as:" +move.toString());
         Constants.MOVE returnMove = null;
         if(move == DataTuple.DiscreteTag.CLASS_UP)
             returnMove = UP;
@@ -188,11 +205,22 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         if(move == DataTuple.DiscreteTag.CLASS_RIGHT)
             returnMove = RIGHT;
 
+        if(Utilities.log){
+            System.out.println("\n--->Closest ghost: "+ghostValues.toString());
+            System.out.println("\t===>Closest pill distance: "+closestPillDistance+", direction to: "+directionToPill);
+            System.out.println("\t\t>>>>>>> Classified as:" +move.toString());
+        }
 
         return returnMove;
 
     }
 
+    /**Calculates the closest ghost its values: distance, direction, isEdible. Creates and returns a pojo object holding
+     * the values.
+     *
+     * @param game : Game
+     * @return  ghost : GhostValues()
+     */
     private GhostValues closestGhost(Game game){
         ArrayList<GhostValues> ghosts = new ArrayList<>();
         int[] distances = new int[4];
@@ -233,30 +261,24 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
     }
 
 
-    /**Assert the accuracy of the try by performing 'Holdout'. The data table is split in two parts
-     * TODO
-     * @param trainData : DataSet
-     * @return accuracy : double
+    /**The node object on which the tree is being build with.
      */
+    private class Node{
 
-    /**Class for creating the tree
-     *
-     *
-     */
-    public class Node{
-
-        protected DataTuple.DiscreteTag label, edge; //TODO fix edge for viewing the tree
+        protected DataTuple.DiscreteTag label, edge;
         protected boolean isLeaf = false;
         protected Node parent = null;
         protected ArrayList<Node> children = new ArrayList<>();
 
-        /**
+        /**A recursive method to generate a decision tree. Input parameters are the data table on which the tree builds
+         * itself upon and a list with attributes on which it decides the best attribute to select for the next node. The
+         * selection is based on ID3.
          *
          * @param dataSet : DataTable
          * @param attributeList : LinkedList<T>
          * @return
          */
-        private Node generateTree(DataTable dataSet, LinkedList<DataTuple.DiscreteTag> attributeList){
+        private Node generateTree(DataTable dataSet, LinkedList<DataTuple.DiscreteTag> attributeList) throws Exception {
             System.out.println("### in generateTree ###");
             Node node = new Node();
 
@@ -314,6 +336,9 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
     }
 
+    /**POJO to store ghost values.
+     *
+     */
     private class GhostValues{
         DataTuple.DiscreteTag distanceTag;
         DataTuple.DiscreteTag ghostDirection;
@@ -322,11 +347,11 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         Constants.GHOST ghost;
 
 
-        /**
-         *  @param distance
-         * @param ghost
-         * @param ghostDirections
-         * @param ghostEdible
+        /**Instantiates this object and discretize the values.
+         *  @param distance : int
+         * @param ghost : Constants.Ghost
+         * @param ghostDirections : DiscreteTag
+         * @param ghostEdible : boolean
          */
         public GhostValues(int distance, Constants.GHOST ghost, DataTuple.DiscreteTag ghostDirections, boolean ghostEdible) {
             if(distance<0)

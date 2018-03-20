@@ -3,22 +3,28 @@ package pacman.controllers.id3Controller;
 import dataRecording.DataSaverLoader;
 import dataRecording.DataTuple;
 import pacman.game.Constants;
-import pacman.game.Game;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**This class represents a tabular data structure for holding data used by the ID3 classifier. The data is stored in a
  * 2d ArrayList where each column at index 0 holds the value of the column name. It is paramount that the CLASS column
- * is the last column in the list.
+ * is the last column in the list in order for the classifier to work.
  *
  * Created by: Patrik Lind, 17-03-2018
  *
  * @param
  */
 public class DataTable implements Cloneable {
+
+
     protected ArrayList<ArrayList<DataTuple.DiscreteTag>> table;
 
+
+    protected DataTable(){
+        table = new ArrayList<ArrayList<DataTuple.DiscreteTag>>();
+
+    }
 
     /**Adds a tuple to the table, if the table have less columns than the tuple additional column will be
      * initiated
@@ -35,12 +41,14 @@ public class DataTable implements Cloneable {
     }
 
 
-    /**Loads the recorded data from 'trainingData.txt' and creates a table based on that data.
-     * TODO make this method more dynamic, no hard coding!
+    /**Creates and returns a tuple at the specified index. The structure returned holds the column names at index 0
+     * and the element values at index 1. The returned data structure is used by the decision tree to classify a tuple.
+     *
+     * @param indexToTuple : int
+     * @return
      */
-
-    protected  ArrayList<DataTuple.DiscreteTag>[] getTuple(int i) {
-        if(i<0 || i>=table.get(0).size())
+    protected  ArrayList<DataTuple.DiscreteTag>[] getTuple(int indexToTuple) {
+        if(indexToTuple<0 || indexToTuple>=table.get(0).size())
             return null;
 
         ArrayList<DataTuple.DiscreteTag>[] tuple = new ArrayList[2];
@@ -48,14 +56,19 @@ public class DataTable implements Cloneable {
         tuple[1] = new ArrayList<>();
         for (int j = 0; j<table.size();j++){
             tuple[0].add(table.get(j).get(0));
-            tuple[1].add(table.get(j).get(i));
+            tuple[1].add(table.get(j).get(indexToTuple));
         }
         return tuple;
     }
 
+    /**Loads the recorded data, transforms and discretize  to further store in the data table. This is the working method
+     * in where attribute selection for the data table is hard coded. When adding additional attributes be aware of the
+     * requirement of the CLASS label to be the last column in the table.
+     *
+     */
     protected void loadRecordedData() {
-        DataTuple[] pacManData= DataSaverLoader.LoadPacManData();
-        //Create headers for columns
+        DataTuple[] rawData= DataSaverLoader.LoadPacManData();
+        //Create headers for columns and add them to the table
         ArrayList<DataTuple.DiscreteTag> tuple = new ArrayList<>();
         tuple.add( DataTuple.DiscreteTag.PILL_DISTANCE);
         tuple.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
@@ -64,50 +77,43 @@ public class DataTable implements Cloneable {
         tuple.add(DataTuple.DiscreteTag.GHOST_EDIBLE);
         tuple.add(DataTuple.DiscreteTag.CLASS);        //MUST BE LAST!!
 
-
-        //insert headers
         addTuple(tuple);
 
-        //insert tuples
-        /**CLASS
-         * MAZE - need to navigate
-         * pacmanPosition in maze
-         *
-         */
-        for(int i =0;i<pacManData.length;i++){
+        //Get each tuple from the raw data, transform it and store it in the table
+        for(int i =0;i<rawData.length;i++){
             tuple.clear();
 
             //calculate closest ghost and its distanceTag & isEdible
             boolean[] ghostsEdible = new boolean[4];
             int indexToClosestGhost = 0;
-            Constants.MOVE closestGhostDir = pacManData[i].blinkyDir;
-            int closestGhostDistance = pacManData[i].blinkyDist;
-            if(pacManData[i].inkyDist<closestGhostDistance){
-                closestGhostDir = pacManData[i].inkyDir;
-                closestGhostDistance = pacManData[i].inkyDist;
+            Constants.MOVE closestGhostDir = rawData[i].blinkyDir;
+            int closestGhostDistance = rawData[i].blinkyDist;
+            if(rawData[i].inkyDist<closestGhostDistance){
+                closestGhostDir = rawData[i].inkyDir;
+                closestGhostDistance = rawData[i].inkyDist;
                 indexToClosestGhost=1;
             }
-            if(pacManData[i].pinkyDist<closestGhostDistance){
-                closestGhostDir = pacManData[i].pinkyDir;
-                closestGhostDistance = pacManData[i].pinkyDist;
+            if(rawData[i].pinkyDist<closestGhostDistance){
+                closestGhostDir = rawData[i].pinkyDir;
+                closestGhostDistance = rawData[i].pinkyDist;
                 indexToClosestGhost=2;
 
             }
-            if(pacManData[i].sueDist<closestGhostDistance){
-                closestGhostDir = pacManData[i].sueDir;
-                closestGhostDistance = pacManData[i].sueDist;
+            if(rawData[i].sueDist<closestGhostDistance){
+                closestGhostDir = rawData[i].sueDir;
+                closestGhostDistance = rawData[i].sueDist;
                 indexToClosestGhost=3;
 
             }
-            ghostsEdible[0] = pacManData[i].isBlinkyEdible;
-            ghostsEdible[1] = pacManData[i].isInkyEdible;
-            ghostsEdible[2] = pacManData[i].isPinkyEdible;
-            ghostsEdible[3] = pacManData[i].isSueEdible;
+            ghostsEdible[0] = rawData[i].isBlinkyEdible;
+            ghostsEdible[1] = rawData[i].isInkyEdible;
+            ghostsEdible[2] = rawData[i].isPinkyEdible;
+            ghostsEdible[3] = rawData[i].isSueEdible;
 
             //get pill distanceTag
-            tuple.add( pillDistance(pacManData[i].pillDist) );
+            tuple.add( pillDistance(rawData[i].pillDist) );
             //get direction to pill
-            tuple.add(parseMoveToPill(pacManData[i].pillMove));
+            tuple.add(parseMoveToPill(rawData[i].pillMove));
             //get discrete distanceTag
             tuple.add(ghostDistance(closestGhostDistance));
             //get his direction
@@ -120,7 +126,7 @@ public class DataTable implements Cloneable {
 
 
             //get class
-            tuple.add(parseMoveClass(pacManData[i].DirectionChosen));
+            tuple.add(parseMoveClass(rawData[i].DirectionChosen));
             addTuple(tuple);
         }
 
@@ -142,24 +148,24 @@ public class DataTable implements Cloneable {
 
     /**
      * Discretize a distanceTag to a pill
-     * @param distance the distanceTag
+     * @param distanceToPill the distanceTag
      * @return the discretized value
      */
-    protected DataTuple.DiscreteTag pillDistance(int distance)
+    protected DataTuple.DiscreteTag pillDistance(int distanceToPill)
     {
-        if (distance < 10)
+        if (distanceToPill < 10)
             return DataTuple.DiscreteTag.VERY_LOW;
-        if (distance < 20)
+        if (distanceToPill < 20)
             return DataTuple.DiscreteTag.LOW;
-        if (distance < 50)
+        if (distanceToPill < 50)
             return DataTuple.DiscreteTag.MEDIUM;
         return  DataTuple.DiscreteTag.HIGH;
     }
 
-    /**Parse the input to enum of the type of this class and returns it as T.
+    /**Parse the input to enum of the type of this class and returns it as DiscreteTag.
      *
      * @param directionChosen : Constants.MOVE
-     * @return direction : T
+     * @return direction : DiscreteTag
      */
     protected DataTuple.DiscreteTag parseMoveClass(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
@@ -180,6 +186,7 @@ public class DataTable implements Cloneable {
 
         return direction;
     }
+
     protected DataTuple.DiscreteTag parseMoveGhost(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
         DataTuple.DiscreteTag direction= null;
@@ -201,6 +208,7 @@ public class DataTable implements Cloneable {
         }
         return direction;
     }
+
     protected DataTuple.DiscreteTag parseMoveToPill(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
         DataTuple.DiscreteTag direction= null;
@@ -221,12 +229,6 @@ public class DataTable implements Cloneable {
 
         return direction;
     }
-
-    public DataTable(){
-        table = new ArrayList<ArrayList<DataTuple.DiscreteTag>>();
-
-    }
-
 
     /**Clones and returns a copy of this object.
      *
@@ -345,7 +347,8 @@ public class DataTable implements Cloneable {
         majorityValue = uniqueVals.get(index);
 
 
-        System.out.println("### IN majorityClassValue\n\t "+majorityValue+", count= "+highest);
+        if(Utilities.log)
+            System.out.println("### IN majorityClassValue\n\t "+majorityValue+", count= "+highest);
         return majorityValue;
     }
 
@@ -356,7 +359,7 @@ public class DataTable implements Cloneable {
      * @param dataSet : DataTable
      * @return : paritionedTable : DataTable[]
      */
-    protected DataTable[] partitionSetOnAttributeValue(DataTuple.DiscreteTag columnLabel, DataTable dataSet) {
+    protected DataTable[] partitionSetOnAttributeValue(DataTuple.DiscreteTag columnLabel, DataTable dataSet) throws Exception {
 
         //Find unique column values
         ArrayList<DataTuple.DiscreteTag> column = dataSet.getColumn(dataSet,columnLabel);
@@ -439,7 +442,7 @@ public class DataTable implements Cloneable {
      * @return column : ArratList<T>
      * @throws NullPointerException
      */
-    protected ArrayList<DataTuple.DiscreteTag> getColumn(DataTable dataSet,DataTuple.DiscreteTag attribute) throws NullPointerException{
+    protected ArrayList<DataTuple.DiscreteTag> getColumn(DataTable dataSet,DataTuple.DiscreteTag attribute) throws Exception {
         ArrayList<DataTuple.DiscreteTag> column = null;
         for (int i = 0; i <dataSet.table.size(); i++){
             ArrayList<DataTuple.DiscreteTag> a = dataSet.table.get(i);
@@ -449,7 +452,7 @@ public class DataTable implements Cloneable {
 
         }
         if(column == null)
-            throw new NullPointerException("Attribute passed in as argument probably isn't a column name");
+            throw new Exception(attribute+"is not present in the table");
         return column;
     }
 
@@ -508,12 +511,14 @@ public class DataTable implements Cloneable {
         DataTable[] tables = splitTableForHoldout(this);
         //T label = getClassLabel(13);
      //   ArrayList<T> col = getColumn(this, (T) DiscreteValues.CREDIT_RATING);
-        DataTable[] tablesPartitioned =  partitionSetOnAttributeValue( DataTuple.DiscreteTag.GHOST_DIRECTION,this);
+        try {
+            DataTable[] tablesPartitioned =  partitionSetOnAttributeValue( DataTuple.DiscreteTag.GHOST_DIRECTION,this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println();
 
     }
-
-
 
 
     public String toString(){
@@ -521,7 +526,7 @@ public class DataTable implements Cloneable {
 
         ArrayList<String> columnNames = new ArrayList<>();
         for (ArrayList<DataTuple.DiscreteTag> col : table){
-            sb.append(col.get(0).toString()+", size: "+col.size()+", ");
+            sb.append("Columns in table: "+col.get(0).toString()+"\t\n Number of tuples: "+(col.size()-1));
         }
 
         return "### DataTable\n\t"+sb.toString();
@@ -537,14 +542,7 @@ public class DataTable implements Cloneable {
 
     }
 
-
-    public void printTuple(ArrayList<DataTuple.DiscreteTag>[] tuple) {
-        for(int i =0;i<tuple.length;i++){
-            for(DataTuple.DiscreteTag val : tuple[i]){
-                System.out.print(val+"\t\t");
-            }
-            System.out.println();
-
-        }
+    public double getTableSize() {
+        return table.get(0).size()-1;
     }
 }

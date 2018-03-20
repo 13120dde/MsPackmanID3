@@ -78,14 +78,22 @@ public class Executor
 		*/
 		
 		//run game in asynchronous mode and record it to file for replay at a later stage.
-		boolean visual=true;
+		/*boolean visual=true;
 		String fileName="replay.txt";
 		exec.runGameTimedRecorded(new MsPacmanID3(),new RandomGhosts(),visual,fileName);
 		exec.replayGame(fileName,visual);
-
+		*/
 		//run game for data collection
 		//exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new Legacy2TheReckoning(),visual);
-		//exec.runGameTimed(new MsPacmanID3(),new StarterGhosts(),visual);
+		boolean visual = true;
+		/*int i = 0;
+		while(i<10){
+			exec.runGameTimed(new MsPacmanID3(),new RandomGhosts(),visual);
+			i++;
+		}*/
+
+		exec.runGameTimed(new MsPacmanID3(),new RandomGhosts(),visual);
+
 	}
 	
     /**
