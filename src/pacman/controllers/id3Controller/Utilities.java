@@ -20,10 +20,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Utilities {
 
     private static Graph graph;
-    public static final boolean log = false;
+    public static final boolean LOG = false;
+    public static final boolean ALL_GHOSTS = false;
 
     protected static Queue<MsPacmanID3.Node> queue = new LinkedList<>() ;
-
 
 
     protected static void printTuple(ArrayList<DataTuple.DiscreteTag>[] tuple) {

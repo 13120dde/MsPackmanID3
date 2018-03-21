@@ -13,7 +13,7 @@ public class Log
 	{
 		msg=new StringBuilder();
 		
-		fileName="log.txt";
+		fileName="LOG.txt";
 		timeStamp=false;
 		console=false;
 	}

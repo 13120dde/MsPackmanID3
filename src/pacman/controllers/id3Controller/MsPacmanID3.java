@@ -33,6 +33,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
     public MsPacmanID3(){
         dataSet = new DataTable();
         dataSet.loadRecordedData();
+        //dataSet.loadExampleData();
         DataTable[] splitTables = dataSet.splitTableForHoldout(dataSet);
         attributeList = dataSet.getAttributeList();
 
@@ -69,49 +70,35 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         columns.add(DataTuple.DiscreteTag.PILL_DISTANCE);
         columns.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
 
-        //Blinky
-        //columns.add(DataTuple.DiscreteTag.BLINKY_DISTANCE);
-        columns.add(DataTuple.DiscreteTag.BLINKY_DIRECTION);
-        //columns.add(DataTuple.DiscreteTag.BLINKY_EDIBLE);
+        if(Utilities.ALL_GHOSTS){
+            //Blinky
+            //columns.add(DataTuple.DiscreteTag.BLINKY_DISTANCE);
+            columns.add(DataTuple.DiscreteTag.BLINKY_DIRECTION);
+            //columns.add(DataTuple.DiscreteTag.BLINKY_EDIBLE);
 
-        //Pinky
-        //columns.add(DataTuple.DiscreteTag.PINKY_DISTANCE);
-        columns.add(DataTuple.DiscreteTag.PINKY_DIRECTION);
-        //columns.add(DataTuple.DiscreteTag.PINKY_EDIBLE);
+            //Pinky
+            //columns.add(DataTuple.DiscreteTag.PINKY_DISTANCE);
+            columns.add(DataTuple.DiscreteTag.PINKY_DIRECTION);
+            //columns.add(DataTuple.DiscreteTag.PINKY_EDIBLE);
 
-        //Inky
-        //columns.add(DataTuple.DiscreteTag.INKY_DISTANCE);
-        columns.add(DataTuple.DiscreteTag.INKY_DIRECTION);
-        //columns.add(DataTuple.DiscreteTag.INKY_EDIBLE);
+            //Inky
+            //columns.add(DataTuple.DiscreteTag.INKY_DISTANCE);
+            columns.add(DataTuple.DiscreteTag.INKY_DIRECTION);
+            //columns.add(DataTuple.DiscreteTag.INKY_EDIBLE);
 
-        //Sue
-        //columns.add(DataTuple.DiscreteTag.SUE_DISTANCE);
-        columns.add(DataTuple.DiscreteTag.SUE_DIRECTION);
-        //columns.add(DataTuple.DiscreteTag.SUE_EDIBLE);
+            //Sue
+            //columns.add(DataTuple.DiscreteTag.SUE_DISTANCE);
+            columns.add(DataTuple.DiscreteTag.SUE_DIRECTION);
+            //columns.add(DataTuple.DiscreteTag.SUE_EDIBLE);
+
+        }
 
         //closest ghost
-        //columns.add(DataTuple.DiscreteTag.CLOSEST_GHOST_DISTANCE);
+        columns.add(DataTuple.DiscreteTag.CLOSEST_GHOST_DISTANCE);
         columns.add(DataTuple.DiscreteTag.CLOSEST_GHOST_DIRECTION);
-       // columns.add(DataTuple.DiscreteTag.CLOSEST_GHOST_EDIBLE);
+        columns.add(DataTuple.DiscreteTag.CLOSEST_GHOST_EDIBLE);
 
-
-        //Get values for closest ghost
-  /*      GhostValues ghostValues = closestGhost(game);
-        DataTuple.DiscreteTag closestGhostDistance = ghostValues.distanceTag;
-        DataTuple.DiscreteTag closestGhostDirection = ghostValues.ghostDirection;
-        DataTuple.DiscreteTag ghostEdible = ghostValues.ghostEdible;
-
-        //sort ghosts
-        Collections.sort(ghosts, new Comparator<GhostValues>() {
-
-            @Override
-            public int compare(GhostValues o1, GhostValues o2) {
-                return Integer.compare(o1.distance, o2.distance);
-            }
-        });
-*/
-
-        //get values for closest pill
+      //get values for closest pill
         int pacmanIndex = game.getPacmanCurrentNodeIndex();
         int pillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
                 game.getActivePillsIndices(), Constants.DM.PATH);
@@ -119,8 +106,8 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         Constants.MOVE pillMove = game.getNextMoveTowardsTarget(pacmanIndex,
                 pillIndex, Constants.DM.PATH);
 
-        DataTuple.DiscreteTag closestPillDistance = dataSet.pillDistance(pillDist);
-        DataTuple.DiscreteTag directionToPill = dataSet.parseMoveToPill(pillMove);
+        DataTuple.DiscreteTag closestPillDistance = dataSet.parseRawDistance(DataTuple.DiscreteTag.PILL_DISTANCE,pillDist);
+        DataTuple.DiscreteTag directionToPill = dataSet.parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_PILL,pillMove);
 
         //get values for closest power pill
         int powerPillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
@@ -129,8 +116,8 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         Constants.MOVE powerPillMove = game.getNextMoveTowardsTarget(pacmanIndex,
                 powerPillIndex, Constants.DM.PATH);
 
-        DataTuple.DiscreteTag closestPowerPillDistance = dataSet.pillDistance(powerPillDist);
-        DataTuple.DiscreteTag directionToPowerPill = dataSet.parseMoveToPowerPill(powerPillMove);
+        DataTuple.DiscreteTag closestPowerPillDistance = dataSet.parseRawDistance(DataTuple.DiscreteTag.POWER_PILL_DISTANCE,powerPillDist);
+        DataTuple.DiscreteTag directionToPowerPill = dataSet.parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL,powerPillMove);
 
         //Add vals to tuple, need to have as many as headers
          vals.add(closestPowerPillDistance);
@@ -139,25 +126,29 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         vals.add(directionToPill);
 
         ArrayList<GhostValues> ghosts = closestGhost(game);
-        //add blinky
-        //vals.add(ghosts.get(0).distanceTag);
-        vals.add(ghosts.get(0).ghostDirection);
-        //vals.add(ghosts.get(0).ghostEdible);
+        if(Utilities.ALL_GHOSTS){
 
-        //add pinky
-        //vals.add(ghosts.get(1).distanceTag);
-        vals.add(ghosts.get(1).ghostDirection);
-        //vals.add(ghosts.get(1).ghostEdible);
+            //add blinky
+            //vals.add(ghosts.get(0).distanceTag);
+            vals.add(ghosts.get(0).ghostDirectionTag);
+            //vals.add(ghosts.get(0).ghostEdibleTag);
 
-        //add inky
-        //vals.add(ghosts.get(2).distanceTag);
-        vals.add(ghosts.get(2).ghostDirection);
-        //vals.add(ghosts.get(2).ghostEdible);
+            //add pinky
+            //vals.add(ghosts.get(1).distanceTag);
+            vals.add(ghosts.get(1).ghostDirectionTag);
+            //vals.add(ghosts.get(1).ghostEdibleTag);
 
-        //add sue
-        //vals.add(ghosts.get(3).distanceTag);
-        vals.add(ghosts.get(3).ghostDirection);
-      //  vals.add(ghosts.get(3).ghostEdible);
+            //add inky
+            //vals.add(ghosts.get(2).distanceTag);
+            vals.add(ghosts.get(2).ghostDirectionTag);
+            //vals.add(ghosts.get(2).ghostEdibleTag);
+
+            //add sue
+            //vals.add(ghosts.get(3).distanceTag);
+            vals.add(ghosts.get(3).ghostDirectionTag);
+            //  vals.add(ghosts.get(3).ghostEdibleTag);
+
+        }
 
         //sort ghosts
         Collections.sort(ghosts, new Comparator<GhostValues>() {
@@ -170,8 +161,8 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
         //add closest ghost
         vals.add(ghosts.get(0).distanceTag);
-        vals.add(ghosts.get(0).ghostDirection);
-        vals.add(ghosts.get(0).ghostEdible);
+        vals.add(ghosts.get(0).ghostDirectionTag);
+        vals.add(ghosts.get(0).ghostEdibleTag);
 
         tuple[0] = columns;
         tuple[1] = vals;
@@ -189,7 +180,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         if(move == DataTuple.DiscreteTag.CLASS_RIGHT)
             returnMove = RIGHT;
 
-        if(Utilities.log){
+        if(Utilities.LOG){
             System.out.println("\n--->Closest ghost: "+ghosts.get(0).toString());
             System.out.println("\t===>Closest pill distance: "+closestPillDistance+", direction to: "+directionToPill);
             System.out.println("\t\t>>>>>>> Classified as:" +move.toString());
@@ -303,32 +294,46 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
      */
     private ArrayList<GhostValues> closestGhost(Game game){
         ArrayList<GhostValues> ghosts = new ArrayList<>();
-        int[] distances = new int[4];
-        ArrayList<DataTuple.DiscreteTag> moves = new ArrayList();
-        int pacmanIndex = game.getPacmanCurrentNodeIndex();
-        int ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY);
-        distances[0] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add(dataSet.parseMoveClosestGhost( game.getGhostLastMoveMade(Constants.GHOST.BLINKY)));
-        ghosts.add(new GhostValues(distances[0], Constants.GHOST.BLINKY,moves.get(0),game.isGhostEdible(Constants.GHOST.BLINKY)));
+        int distance;
 
+        int pacmanIndex = game.getPacmanCurrentNodeIndex();
+
+        int ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY);
+        distance = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        ghosts.add(new GhostValues(
+                distance,
+                Constants.GHOST.BLINKY,
+                game.getGhostLastMoveMade(Constants.GHOST.BLINKY),
+                game.isGhostEdible(Constants.GHOST.BLINKY))
+        );
 
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY);
-        distances[1]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add( dataSet.parseMoveClosestGhost( game.getGhostLastMoveMade(Constants.GHOST.PINKY)));
-        ghosts.add(new GhostValues(distances[1], Constants.GHOST.PINKY,moves.get(1), game.isGhostEdible(Constants.GHOST.PINKY)));
+        distance = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        ghosts.add(new GhostValues(
+                distance,
+                Constants.GHOST.PINKY,
+                game.getGhostLastMoveMade(Constants.GHOST.PINKY),
+                game.isGhostEdible(Constants.GHOST.PINKY))
+        );
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.INKY);
-        distances[2] = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add( dataSet.parseMoveClosestGhost( game.getGhostLastMoveMade(Constants.GHOST.INKY)));
-        ghosts.add(new GhostValues(distances[2], Constants.GHOST.INKY,moves.get(2), game.isGhostEdible(Constants.GHOST.INKY)));
+        distance = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        ghosts.add(new GhostValues(
+                distance,
+                Constants.GHOST.INKY,
+                game.getGhostLastMoveMade(Constants.GHOST.INKY),
+                game.isGhostEdible(Constants.GHOST.INKY))
+        );
 
         ghostCurrentNodeIndex = game.getGhostCurrentNodeIndex(Constants.GHOST.SUE);
-        distances[3]= game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
-        moves.add( dataSet.parseMoveClosestGhost( game.getGhostLastMoveMade(Constants.GHOST.SUE)));
-        ghosts.add(new GhostValues(distances[3], Constants.GHOST.SUE,moves.get(3), game.isGhostEdible(Constants.GHOST.SUE)));
-
-
+        distance = game.getShortestPathDistance(pacmanIndex,ghostCurrentNodeIndex);
+        ghosts.add(new GhostValues(
+                distance,
+                Constants.GHOST.SUE,
+                game.getGhostLastMoveMade(Constants.GHOST.SUE),
+                game.isGhostEdible(Constants.GHOST.SUE))
+        );
 
         return ghosts;
     }
@@ -423,37 +428,69 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
      */
     private class GhostValues{
         DataTuple.DiscreteTag distanceTag;
-        DataTuple.DiscreteTag ghostDirection;
-        DataTuple.DiscreteTag ghostEdible;
-        int distance;
+        DataTuple.DiscreteTag ghostDirectionTag;
+        DataTuple.DiscreteTag ghostEdibleTag;
         Constants.GHOST ghost;
+        int distance;
 
 
         /**Instantiates this object and discretize the values.
          *  @param distance : int
          * @param ghost : Constants.Ghost
-         * @param ghostDirections : DiscreteTag
-         * @param ghostEdible : boolean
+         * @param ghostEdibleTag : boolean
          */
-        public GhostValues(int distance, Constants.GHOST ghost, DataTuple.DiscreteTag ghostDirections, boolean ghostEdible) {
+
+
+        public GhostValues(int distance, Constants.GHOST ghost, Constants.MOVE move, boolean ghostEdibleTag) {
             if(distance<0)
                 distance=Integer.MAX_VALUE;
             this.distance= distance;
-            distanceTag = dataSet.ghostDistance(distance);
-            this.ghost = ghost;
-            if(ghostDirections == DataTuple.DiscreteTag.GHOST_MOVE_NEUTRAL)
-                this.ghostDirection= DataTuple.DiscreteTag.GHOST_MOVE_RIGHT;
-            else
-                this.ghostDirection = ghostDirections;
-            if(ghostEdible)
-                this.ghostEdible = DataTuple.DiscreteTag.EDIBLE_TRUE;
-            else
-                this.ghostEdible = DataTuple.DiscreteTag.EDIBLE_FALSE;
+            this.ghost=ghost;
 
+            switch (ghost){
+                case BLINKY:
+                    distanceTag = dataSet.parseRawDistance(DataTuple.DiscreteTag.BLINKY_DISTANCE,this.distance);
+                    ghostDirectionTag = dataSet.parseRawDirection(DataTuple.DiscreteTag.BLINKY_DIRECTION,move);
+                    this.ghostEdibleTag = dataSet.parseRawEdible(DataTuple.DiscreteTag.BLINKY_EDIBLE, ghostEdibleTag);
+                    if(ghostDirectionTag== DataTuple.DiscreteTag.BLINKY_MOVE_NEUTRAL)
+                        ghostDirectionTag= DataTuple.DiscreteTag.BLINKY_MOVE_LEFT;
+
+                    break;
+
+                case INKY:
+                    distanceTag = dataSet.parseRawDistance(DataTuple.DiscreteTag.INKY_DISTANCE,this.distance);
+                    ghostDirectionTag = dataSet.parseRawDirection(DataTuple.DiscreteTag.INKY_DIRECTION,move);
+                    this.ghostEdibleTag = dataSet.parseRawEdible(DataTuple.DiscreteTag.INKY_EDIBLE, ghostEdibleTag);
+                    if(ghostDirectionTag== DataTuple.DiscreteTag.INKY_MOVE_NEUTRAL)
+                        ghostDirectionTag= DataTuple.DiscreteTag.INKY_MOVE_LEFT;
+
+                    break;
+
+                case PINKY:
+                    distanceTag = dataSet.parseRawDistance(DataTuple.DiscreteTag.PINKY_DISTANCE,this.distance);
+                    ghostDirectionTag = dataSet.parseRawDirection(DataTuple.DiscreteTag.PINKY_DIRECTION,move);
+                    this.ghostEdibleTag = dataSet.parseRawEdible(DataTuple.DiscreteTag.PINKY_EDIBLE, ghostEdibleTag);
+                    if(ghostDirectionTag== DataTuple.DiscreteTag.PINKY_MOVE_NEUTRAL)
+                        ghostDirectionTag= DataTuple.DiscreteTag.PINKY_MOVE_LEFT;
+
+                    break;
+
+                case SUE:
+                    distanceTag = dataSet.parseRawDistance(DataTuple.DiscreteTag.SUE_DISTANCE,this.distance);
+                    ghostDirectionTag = dataSet.parseRawDirection(DataTuple.DiscreteTag.SUE_DIRECTION,move);
+                    this.ghostEdibleTag = dataSet.parseRawEdible(DataTuple.DiscreteTag.SUE_EDIBLE, ghostEdibleTag);
+                    if(ghostDirectionTag== DataTuple.DiscreteTag.SUE_MOVE_NEUTRAL)
+                        ghostDirectionTag= DataTuple.DiscreteTag.SUE_MOVE_LEFT;
+
+                    break;
+
+
+            }
         }
 
+
         public String toString(){
-            return ghost+", distance: "+distance+" = "+distanceTag+", move: "+ghostDirection;
+            return ghost+", distance: "+distanceTag+", move: "+ ghostDirectionTag+",is edible"+ghostEdibleTag;
 
         }
 

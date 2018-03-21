@@ -87,30 +87,35 @@ public class DataTable implements Cloneable {
         tuple.add( DataTuple.DiscreteTag.PILL_DISTANCE);
         tuple.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
 
-        //Blinky
-      //  tuple.add(DataTuple.DiscreteTag.BLINKY_DISTANCE);
-        tuple.add(DataTuple.DiscreteTag.BLINKY_DIRECTION);
-      //  tuple.add(DataTuple.DiscreteTag.BLINKY_EDIBLE);
+        if(Utilities.ALL_GHOSTS){
 
-        //Pinky
-        //tuple.add(DataTuple.DiscreteTag.PINKY_DISTANCE);
-        tuple.add(DataTuple.DiscreteTag.PINKY_DIRECTION);
-        //tuple.add(DataTuple.DiscreteTag.PINKY_EDIBLE);
+            //Blinky
+            //  tuple.add(DataTuple.DiscreteTag.BLINKY_DISTANCE);
+            tuple.add(DataTuple.DiscreteTag.BLINKY_DIRECTION);
+            //  tuple.add(DataTuple.DiscreteTag.BLINKY_EDIBLE);
 
-        //Inky
-        //tuple.add(DataTuple.DiscreteTag.INKY_DISTANCE);
-        tuple.add(DataTuple.DiscreteTag.INKY_DIRECTION);
-        //tuple.add(DataTuple.DiscreteTag.INKY_EDIBLE);
+            //Pinky
+            //tuple.add(DataTuple.DiscreteTag.PINKY_DISTANCE);
+            tuple.add(DataTuple.DiscreteTag.PINKY_DIRECTION);
+            //tuple.add(DataTuple.DiscreteTag.PINKY_EDIBLE);
 
-        //Sue
-        //tuple.add(DataTuple.DiscreteTag.SUE_DISTANCE);
-        tuple.add(DataTuple.DiscreteTag.SUE_DIRECTION);
-        //tuple.add(DataTuple.DiscreteTag.SUE_EDIBLE);
+            //Inky
+            //tuple.add(DataTuple.DiscreteTag.INKY_DISTANCE);
+            tuple.add(DataTuple.DiscreteTag.INKY_DIRECTION);
+            //tuple.add(DataTuple.DiscreteTag.INKY_EDIBLE);
 
+            //Sue
+            //tuple.add(DataTuple.DiscreteTag.SUE_DISTANCE);
+            tuple.add(DataTuple.DiscreteTag.SUE_DIRECTION);
+            //tuple.add(DataTuple.DiscreteTag.SUE_EDIBLE);
+
+
+        }
 
         tuple.add(DataTuple.DiscreteTag.CLOSEST_GHOST_DISTANCE);
         tuple.add(DataTuple.DiscreteTag.CLOSEST_GHOST_DIRECTION);
         tuple.add(DataTuple.DiscreteTag.CLOSEST_GHOST_EDIBLE);
+
         tuple.add(DataTuple.DiscreteTag.CLASS);        //MUST BE LAST!!
 
         addTuple(tuple);
@@ -147,65 +152,357 @@ public class DataTable implements Cloneable {
             ghostsEdible[3] = rawData[i].isSueEdible;
 
             //get power pill distance
-            tuple.add( pillDistance(rawData[i].powerpillDist) );
+            tuple.add( parseRawDistance(DataTuple.DiscreteTag.POWER_PILL_DISTANCE,(rawData[i].powerpillDist)));
             //get direction to power pill
-            tuple.add(parseMoveToPowerPill(rawData[i].powerpillMove));
+            tuple.add(parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL,rawData[i].powerpillMove));
             //get pill distanceTag
-            tuple.add( pillDistance(rawData[i].pillDist) );
+            tuple.add( parseRawDistance(DataTuple.DiscreteTag.PILL_DISTANCE,rawData[i].pillDist));
             //get direction to pill
-            tuple.add(parseMoveToPill(rawData[i].pillMove));
+            tuple.add(parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_PILL,rawData[i].pillMove));
 
-            //blinky
-          //  tuple.add(ghostDistance(rawData[i].blinkyDist));
-            tuple.add(parseMoveBlinky(rawData[i].blinkyDir));
+            if(Utilities.ALL_GHOSTS){
+
+                //  tuple.add(ghostDistance(rawData[i].blinkyDist));
+                tuple.add(parseRawDirection(DataTuple.DiscreteTag.BLINKY_DIRECTION,rawData[i].blinkyDir));
             /*if(ghostsEdible[0])
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
             else
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
 */
-            //pinky
-  //          tuple.add(ghostDistance(rawData[i].pinkyDist));
-            tuple.add(parseMovePinky(rawData[i].pinkyDir));
+                //pinky
+                //          tuple.add(ghostDistance(rawData[i].pinkyDist));
+                tuple.add(parseRawDirection(DataTuple.DiscreteTag.PINKY_DIRECTION,rawData[i].pinkyDir));
     /*        if(ghostsEdible[1])
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
             else
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
 */
-            //inky
-  //          tuple.add(ghostDistance(rawData[i].inkyDist));
-            tuple.add(parseMoveInky(rawData[i].inkyDir));
+                //inky
+                //          tuple.add(ghostDistance(rawData[i].inkyDist));
+                tuple.add(parseRawDirection(DataTuple.DiscreteTag.INKY_DIRECTION,rawData[i].inkyDir));
     /*        if(ghostsEdible[2])
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
             else
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
 */
 
-            //sue
-    //        tuple.add(ghostDistance(rawData[i].sueDist));
-            tuple.add(parseMoveSue(rawData[i].sueDir));
+                //sue
+                //        tuple.add(ghostDistance(rawData[i].sueDist));
+                tuple.add(parseRawDirection(DataTuple.DiscreteTag.SUE_DIRECTION,rawData[i].sueDir));
       /*      if(ghostsEdible[3])
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
             else
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
 */
+            }
+
+            //blinky
 
             //closest ghost
-            tuple.add(ghostDistance(closestGhostDistance));
-            tuple.add(parseMoveClosestGhost(closestGhostDir));
-            if (ghostsEdible[indexToClosestGhost])
-                tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
-            else
-                tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
-
+            tuple.add(parseRawDistance(DataTuple.DiscreteTag.CLOSEST_GHOST_DISTANCE,closestGhostDistance));
+            tuple.add(parseRawDirection(DataTuple.DiscreteTag.CLOSEST_GHOST_DIRECTION,closestGhostDir));
+            //tuple.add(ghostDistance(closestGhostDistance));
+            //tuple.add(parseMoveClosestGhost(closestGhostDir));
+            tuple.add(parseRawEdible(DataTuple.DiscreteTag.CLOSEST_GHOST_EDIBLE,ghostsEdible[indexToClosestGhost]));
 
             //get class
-            tuple.add(parseMoveClass(rawData[i].DirectionChosen));
+            tuple.add(parseRawDirection(DataTuple.DiscreteTag.CLASS, rawData[i].DirectionChosen));
+            //tuple.add(parseMoveClass(rawData[i].DirectionChosen));
             addTuple(tuple);
         }
 
     }
 
-    protected DataTuple.DiscreteTag ghostDistance(int distance)
+    protected DataTuple.DiscreteTag parseRawDistance(DataTuple.DiscreteTag what, int distance){
+        DataTuple.DiscreteTag toReturn=null;
+        switch (what){
+            case POWER_PILL_DISTANCE:
+                if (distance < 10)
+                    toReturn =  DataTuple.DiscreteTag.PP_VERY_LOW;
+                if (distance < 20)
+                    toReturn = DataTuple.DiscreteTag.PP_LOW;
+                if (distance < 50)
+                    toReturn =  DataTuple.DiscreteTag.PP_MEDIUM;
+                toReturn = DataTuple.DiscreteTag.PP_VERY_HIGH;
+                break;
+
+            case PILL_DISTANCE:
+                if (distance < 10)
+                    toReturn =  DataTuple.DiscreteTag.P_VERY_LOW;
+                if (distance < 20)
+                    toReturn = DataTuple.DiscreteTag.P_LOW;
+                if (distance < 50)
+                    toReturn =  DataTuple.DiscreteTag.P_MEDIUM;
+                toReturn = DataTuple.DiscreteTag.P_VERY_HIGH;
+                break;
+
+            case BLINKY_DISTANCE:
+                if (distance < 20)
+                    toReturn =  DataTuple.DiscreteTag.BLINKY_VERY_LOW;
+                if (distance < 40)
+                    toReturn = DataTuple.DiscreteTag.BLINKY_LOW;
+                if (distance < 60)
+                    toReturn =  DataTuple.DiscreteTag.BLINKY_MEDIUM;
+                if (distance < 100)
+                    toReturn = DataTuple.DiscreteTag.BLINKY_HIGH;
+                toReturn = DataTuple.DiscreteTag.BLINKY_VERY_HIGH;
+                break;
+
+            case PINKY_DISTANCE:
+                if (distance < 20)
+                    toReturn =  DataTuple.DiscreteTag.PINKY_VERY_LOW;
+                if (distance < 40)
+                    toReturn = DataTuple.DiscreteTag.PINKY_LOW;
+                if (distance < 60)
+                    toReturn =  DataTuple.DiscreteTag.PINKY_MEDIUM;
+                if (distance < 100)
+                    toReturn = DataTuple.DiscreteTag.PINKY_HIGH;
+                toReturn = DataTuple.DiscreteTag.PINKY_VERY_HIGH;
+                break;
+
+            case INKY_DISTANCE:
+                if (distance < 20)
+                    toReturn =  DataTuple.DiscreteTag.INKY_VERY_LOW;
+                if (distance < 40)
+                    toReturn = DataTuple.DiscreteTag.INKY_LOW;
+                if (distance < 60)
+                    toReturn =  DataTuple.DiscreteTag.INKY_MEDIUM;
+                if (distance < 100)
+                    toReturn = DataTuple.DiscreteTag.INKY_HIGH;
+                toReturn = DataTuple.DiscreteTag.INKY_VERY_HIGH;
+                break;
+
+            case SUE_DISTANCE:
+                if (distance < 20)
+                    toReturn =  DataTuple.DiscreteTag.SUE_VERY_LOW;
+                if (distance < 40)
+                    toReturn = DataTuple.DiscreteTag.SUE_LOW;
+                if (distance < 60)
+                    toReturn =  DataTuple.DiscreteTag.SUE_MEDIUM;
+                if (distance < 100)
+                    toReturn = DataTuple.DiscreteTag.SUE_HIGH;
+                toReturn = DataTuple.DiscreteTag.SUE_VERY_HIGH;
+                break;
+
+            case CLOSEST_GHOST_DISTANCE:
+                if (distance < 20)
+                    toReturn =  DataTuple.DiscreteTag.CG_VERY_LOW;
+                if (distance < 40)
+                    toReturn = DataTuple.DiscreteTag.CG_LOW;
+                if (distance < 60)
+                    toReturn =  DataTuple.DiscreteTag.CG_MEDIUM;
+                if (distance < 100)
+                    toReturn = DataTuple.DiscreteTag.CG_HIGH;
+                toReturn = DataTuple.DiscreteTag.CG_VERY_HIGH;
+                break;
+
+
+        }
+
+        return toReturn;
+    }
+
+    protected DataTuple.DiscreteTag parseRawDirection(DataTuple.DiscreteTag what, Constants.MOVE direction){
+        DataTuple.DiscreteTag toReturn=null;
+        final String move = direction.name().toUpperCase();
+
+        switch (what){
+            case CLASS:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.CLASS_UP;
+                        break;
+                    case "DOWN":
+                        toReturn=  DataTuple.DiscreteTag.CLASS_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.CLASS_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.CLASS_RIGHT;
+                }
+                break;
+
+            case DIRECTION_TO_POWER_PILL:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.POWER_PILL_UP;
+                        break;
+                    case "DOWN":
+                        toReturn=  DataTuple.DiscreteTag.POWER_PILL_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.POWER_PILL_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.POWER_PILL_RIGHT;
+                }
+                break;
+
+
+            case DIRECTION_TO_PILL:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.PILL_UP;
+                        break;
+                    case "DOWN":
+                        toReturn=  DataTuple.DiscreteTag.PILL_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.PILL_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.PILL_RIGHT;
+                }
+                break;
+
+            case BLINKY_DIRECTION:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.BLINKY_MOVE_UP;
+                        break;
+                    case "DOWN":
+                        toReturn = DataTuple.DiscreteTag.BLINKY_MOVE_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.BLINKY_MOVE_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.BLINKY_MOVE_RIGHT;
+                        break;
+                    case "NEUTRAL":
+                        toReturn = DataTuple.DiscreteTag.BLINKY_MOVE_NEUTRAL;
+                }
+
+                break;
+
+            case PINKY_DIRECTION:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.PINKY_MOVE_UP;
+                        break;
+                    case "DOWN":
+                        toReturn = DataTuple.DiscreteTag.PINKY_MOVE_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.PINKY_MOVE_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.PINKY_MOVE_RIGHT;
+                        break;
+                    case "NEUTRAL":
+                        toReturn = DataTuple.DiscreteTag.PINKY_MOVE_NEUTRAL;
+                }
+                break;
+
+            case INKY_DIRECTION:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.INKY_MOVE_UP;
+                        break;
+                    case "DOWN":
+                        toReturn = DataTuple.DiscreteTag.INKY_MOVE_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.INKY_MOVE_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.INKY_MOVE_RIGHT;
+                        break;
+                    case "NEUTRAL":
+                        toReturn = DataTuple.DiscreteTag.INKY_MOVE_NEUTRAL;
+                }
+                break;
+
+            case SUE_DIRECTION:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.SUE_MOVE_UP;
+                        break;
+                    case "DOWN":
+                        toReturn = DataTuple.DiscreteTag.SUE_MOVE_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.SUE_MOVE_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.SUE_MOVE_RIGHT;
+                        break;
+                    case "NEUTRAL":
+                        toReturn = DataTuple.DiscreteTag.SUE_MOVE_NEUTRAL;
+                }
+                break;
+
+            case CLOSEST_GHOST_DIRECTION:
+                switch (move){
+                    case "UP":
+                        toReturn = DataTuple.DiscreteTag.CG_MOVE_UP;
+                        break;
+                    case "DOWN":
+                        toReturn = DataTuple.DiscreteTag.CG_MOVE_DOWN;
+                        break;
+                    case "LEFT":
+                        toReturn = DataTuple.DiscreteTag.CG_MOVE_LEFT;
+                        break;
+                    case "RIGHT":
+                        toReturn = DataTuple.DiscreteTag.CG_MOVE_RIGHT;
+                        break;
+                    case "NEUTRAL":
+                        toReturn = DataTuple.DiscreteTag.CG_MOVE_NEUTRAL;
+                }
+                break;
+
+
+        }
+
+        return toReturn;
+    }
+
+    protected DataTuple.DiscreteTag parseRawEdible(DataTuple.DiscreteTag what, boolean edible){
+        DataTuple.DiscreteTag toReturn=null;
+        switch (what){
+            case BLINKY_EDIBLE:
+                if(edible)
+                    toReturn = DataTuple.DiscreteTag.BLINKY_EDIBLE_TRUE;
+                else
+                    toReturn = DataTuple.DiscreteTag.BLINKY_EDIBLE_FALSE;
+                break;
+
+            case PINKY_EDIBLE:
+                if(edible)
+                    toReturn = DataTuple.DiscreteTag.PINKY_EDIBLE_TRUE;
+                else
+                    toReturn = DataTuple.DiscreteTag.PINKY_EDIBLE_FALSE;
+                break;
+
+            case INKY_EDIBLE:
+                if(edible)
+                    toReturn = DataTuple.DiscreteTag.INKY_EDIBLE_TRUE;
+                else
+                    toReturn = DataTuple.DiscreteTag.INKY_EDIBLE_FALSE;
+                break;
+
+            case SUE_EDIBLE:
+                if(edible)
+                    toReturn = DataTuple.DiscreteTag.SUE_EDIBLE_TRUE;
+                else
+                    toReturn = DataTuple.DiscreteTag.SUE_EDIBLE_FALSE;
+                break;
+
+            case CLOSEST_GHOST_EDIBLE:
+                if(edible)
+                    toReturn = DataTuple.DiscreteTag.CG_EDIBLE_TRUE;
+                else
+                    toReturn = DataTuple.DiscreteTag.CG_EDIBLE_FALSE;
+                break;
+
+
+        }
+
+        return toReturn;
+    }
+
+   /* protected DataTuple.DiscreteTag ghostDistance(int distance)
     {
 
         if (distance < 20)
@@ -219,11 +516,7 @@ public class DataTable implements Cloneable {
         return DataTuple.DiscreteTag.VERY_HIGH;
     }
 
-    /**
-     * Discretize a distanceTag to a pill
-     * @param distanceToPill the distanceTag
-     * @return the discretized value
-     */
+
     protected DataTuple.DiscreteTag pillDistance(int distanceToPill)
     {
         if (distanceToPill < 10)
@@ -235,11 +528,7 @@ public class DataTable implements Cloneable {
         return  DataTuple.DiscreteTag.HIGH;
     }
 
-    /**Parse the input to enum of the type of this class and returns it as DiscreteTag.
-     *
-     * @param directionChosen : Constants.MOVE
-     * @return direction : DiscreteTag
-     */
+
     protected DataTuple.DiscreteTag parseMoveClass(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
         DataTuple.DiscreteTag direction= null;
@@ -265,19 +554,19 @@ public class DataTable implements Cloneable {
         DataTuple.DiscreteTag direction= null;
         switch (s){
             case "UP":
-                direction = DataTuple.DiscreteTag.GHOST_MOVE_UP;
+                direction = DataTuple.DiscreteTag.CG_MOVE_UP;
                 break;
             case "DOWN":
-                direction = DataTuple.DiscreteTag.GHOST_MOVE_DOWN;
+                direction = DataTuple.DiscreteTag.CG_MOVE_DOWN;
                 break;
             case "LEFT":
-                direction = DataTuple.DiscreteTag.GHOST_MOVE_LEFT;
+                direction = DataTuple.DiscreteTag.CG_MOVE_LEFT;
                 break;
             case "RIGHT":
-                direction = DataTuple.DiscreteTag.GHOST_MOVE_RIGHT;
+                direction = DataTuple.DiscreteTag.CG_MOVE_RIGHT;
                 break;
             case "NEUTRAL":
-                direction = DataTuple.DiscreteTag.GHOST_MOVE_NEUTRAL;
+                direction = DataTuple.DiscreteTag.CG_MOVE_NEUTRAL;
         }
         return direction;
     }
@@ -372,16 +661,16 @@ public class DataTable implements Cloneable {
         DataTuple.DiscreteTag direction= null;
         switch (s){
             case "UP":
-                direction = DataTuple.DiscreteTag.TO_PILL_UP;
+                direction = DataTuple.DiscreteTag.PILL_UP;
                 break;
             case "DOWN":
-                direction = DataTuple.DiscreteTag.TO_PILL_DOWN;
+                direction = DataTuple.DiscreteTag.PILL_DOWN;
                 break;
             case "LEFT":
-                direction = DataTuple.DiscreteTag.TO_PILL_LEFT;
+                direction = DataTuple.DiscreteTag.PILL_LEFT;
                 break;
             case "RIGHT":
-                direction = DataTuple.DiscreteTag.TO_PILL_RIGHT;
+                direction = DataTuple.DiscreteTag.PILL_RIGHT;
 
         }
 
@@ -407,7 +696,7 @@ public class DataTable implements Cloneable {
         }
 
         return direction;
-    }
+    }*/
 
     /**Clones and returns a copy of this object.
      *
@@ -526,7 +815,7 @@ public class DataTable implements Cloneable {
         majorityValue = uniqueVals.get(index);
 
 
-        if(Utilities.log)
+        if(Utilities.LOG)
             System.out.println("### IN majorityClassValue\n\t "+majorityValue+", count= "+highest);
         return majorityValue;
     }
@@ -696,6 +985,129 @@ public class DataTable implements Cloneable {
             e.printStackTrace();
         }
         System.out.println();
+
+    }
+
+    protected void loadExampleData(){
+        ArrayList<DataTuple.DiscreteTag> tuple = new ArrayList<>();
+        tuple.add(DataTuple.DiscreteTag.AGE);
+        tuple.add(DataTuple.DiscreteTag.INCOME);
+        tuple.add(DataTuple.DiscreteTag.STUDENT);
+        tuple.add(DataTuple.DiscreteTag.CREDIT_RATING);
+        tuple.add(DataTuple.DiscreteTag.CLASS);
+        addTuple(tuple);
+        tuple.clear();
+        tuple.add(DataTuple.DiscreteTag.YOUTH);
+        tuple.add(DataTuple.DiscreteTag.HIGH);
+        tuple.add(DataTuple.DiscreteTag.S_NO);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_NO);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.YOUTH);
+        tuple.add(DataTuple.DiscreteTag.HIGH);
+        tuple.add(DataTuple.DiscreteTag.S_NO);
+        tuple.add(DataTuple.DiscreteTag.EXCELLENT);
+        tuple.add(DataTuple.DiscreteTag.C_NO);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        tuple.add(DataTuple.DiscreteTag.HIGH);
+        tuple.add(DataTuple.DiscreteTag.S_NO);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.SENIOR);
+        tuple.add(DataTuple.DiscreteTag.MEDIUM);
+        tuple.add(DataTuple.DiscreteTag.S_NO);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.SENIOR);
+        tuple.add(DataTuple.DiscreteTag.LOW);
+        tuple.add(DataTuple.DiscreteTag.S_YES);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.SENIOR);
+        tuple.add(DataTuple.DiscreteTag.LOW);
+        tuple.add(DataTuple.DiscreteTag.S_YES);
+        tuple.add(DataTuple.DiscreteTag.EXCELLENT);
+        tuple.add(DataTuple.DiscreteTag.C_NO);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        tuple.add(DataTuple.DiscreteTag.LOW);
+        tuple.add(DataTuple.DiscreteTag.S_YES);
+        tuple.add(DataTuple.DiscreteTag.EXCELLENT);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.YOUTH);
+        tuple.add(DataTuple.DiscreteTag.MEDIUM);
+        tuple.add(DataTuple.DiscreteTag.S_YES);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_NO);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.YOUTH);
+        tuple.add(DataTuple.DiscreteTag.LOW);
+        tuple.add(DataTuple.DiscreteTag.STUDENT);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.SENIOR);
+        tuple.add(DataTuple.DiscreteTag.MEDIUM);
+        tuple.add(DataTuple.DiscreteTag.STUDENT);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.YOUTH);
+        tuple.add(DataTuple.DiscreteTag.MEDIUM);
+        tuple.add(DataTuple.DiscreteTag.STUDENT);
+        tuple.add(DataTuple.DiscreteTag.EXCELLENT);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        tuple.add(DataTuple.DiscreteTag.MEDIUM);
+        tuple.add(DataTuple.DiscreteTag.S_NO);
+        tuple.add(DataTuple.DiscreteTag.EXCELLENT);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.MIDDLE_AGED);
+        tuple.add(DataTuple.DiscreteTag.HIGH);
+        tuple.add(DataTuple.DiscreteTag.S_YES);
+        tuple.add(DataTuple.DiscreteTag.FAIR);
+        tuple.add(DataTuple.DiscreteTag.C_YES);
+        addTuple(tuple);
+        tuple.clear();
+
+        tuple.add(DataTuple.DiscreteTag.SENIOR);
+        tuple.add(DataTuple.DiscreteTag.MEDIUM);
+        tuple.add(DataTuple.DiscreteTag.S_NO);
+        tuple.add(DataTuple.DiscreteTag.EXCELLENT);
+        tuple.add(DataTuple.DiscreteTag.C_NO);
+        addTuple(tuple);
+        tuple.clear();
 
     }
 
