@@ -17,6 +17,19 @@ import java.util.LinkedList;
 public class AttributeSelector {
 
 
+    protected class Attribute{
+        protected DataTuple.DiscreteTag selectedAttribute;
+        protected ArrayList<DataTuple.DiscreteTag> uniqueAttributes;
+
+
+        private Attribute(DataTuple.DiscreteTag selectedAttribute,ArrayList<DataTuple.DiscreteTag> uniqueAttributes){
+            this.selectedAttribute=selectedAttribute;
+            this.uniqueAttributes = uniqueAttributes;
+        }
+
+    }
+
+
 
     /**Calculates the entropy for each attribute (column in the data set) in the provided list and returns
      * the attribute with highest entropy, ie attributes that will lead to purest data sets. Following the
@@ -27,74 +40,90 @@ public class AttributeSelector {
      * @param attributeList : LinkedList
      * @return attribute : T
      */
-    protected DataTuple.DiscreteTag id3(DataTable dataTable, LinkedList attributeList) throws Exception {
+    protected Attribute id3(DataTable dataTable, LinkedList<DataTuple.DiscreteTag> attributeList) throws Exception {
+        System.out.println("### IN id3 ###");
+
         System.out.println("### IN id3 ###");
         DataTuple.DiscreteTag bestAttribute = null;
         double averageEntropy;
 
         //calculate Info(D) for the whole table
-        averageEntropy = information(dataTable);
+        averageEntropy = generalEntropy(dataTable);
 
-        ArrayList<DataTuple.DiscreteTag> columns = new ArrayList<>(attributeList);
-        double[] entropies = new double[columns.size()];
+
+        double[] entropies = new double[attributeList.size()];
         double probabilityDenominator=dataTable.getTableSize();
 
-        //calculate InfoA(D) for each column
-        for(int i = 0; i<columns.size();i++){
-            //partition table on column values
-            double entropy = 0;
-            DataTable[] partitionedTables = dataTable.partitionSetOnAttributeValue(columns.get(i),dataTable);
-            for(int j = 0; j<partitionedTables.length;j++){
-                //calculate Dj
-                double probablilityNumerator = partitionedTables[j].getTableSize();
-                entropy+= (probablilityNumerator/probabilityDenominator)* information(partitionedTables[j]);
+        ArrayList<DataTuple.DiscreteTag> uniqueClasses = dataTable.getUniqueValsFromColumn(
+                dataTable.table.get(dataTable.table.size()-1)
+        );
+
+        //Check every attribute
+        for(int i= 0; i<attributeList.size();i++){
+
+            ArrayList<DataTuple.DiscreteTag> columnToCheck = dataTable.getColumn(dataTable,attributeList.get(i));
+            ArrayList<DataTuple.DiscreteTag> uniqueValsInColumn = dataTable.getUniqueValsFromColumn(columnToCheck);
+            double denominator = columnToCheck.size()-1;
+            double[] uniqueValsNumerator = new double[uniqueValsInColumn.size()];
+
+            double entropyForColumn = 0;
+
+            //check column
+            for(int j = 1;j<columnToCheck.size();j++){
+
+                //calculate |Dj|
+                for (int k = 0; k<uniqueValsInColumn.size();k++){
+                    if (columnToCheck.get(j)==uniqueValsInColumn.get(k)){
+                        uniqueValsNumerator[k]++;
+                    }
+                }
+
             }
-            //Total entropy of attribute i
-            entropies[i]=averageEntropy-entropy;
+
+            for(int j =0;j<uniqueClasses.size();j++){
+                for(int k = 1; k<columnToCheck.size();k++){
+                    for( int z=0;z<uniqueValsInColumn.size();z++){
+                        if(columnToCheck.get(k)==uniqueValsInColumn.get(z)){
+                            if(dataTable.table.get(dataTable.table.size()-1).get(k)==uniqueClasses.get(j)){
+                                //uniqueValsNumerator2[z]++;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            System.out.println();
+
         }
 
-        //select T with highest entropy
-        int indexOfHighest =0;
-        double highestEntropy = Double.MIN_VALUE;
-        for(int i=0; i<entropies.length;i++){
-            double entropy = entropies[i];
-            int compare = Double.compare(entropy,highestEntropy);
-            if(compare>=0){
-                indexOfHighest = i;
-                highestEntropy=entropy;
-            }
 
-        }
-        bestAttribute = columns.get(indexOfHighest);
-        if(Utilities.LOG)
-            System.out.println("\t\tSelected attribute: "+bestAttribute.toString());
-        return bestAttribute;
+
+        return null;
+
     }
 
-
-    private double information(DataTable dataTable) {
-        System.out.println("\t calculating information for:"+dataTable.toString());
+    private double generalEntropy(DataTable dataTable) {
+        System.out.println("\t calculating generalEntropy for:"+dataTable.toString());
         double entropy=0;
-        ArrayList<DataTuple.DiscreteTag> uniqueClasses = dataTable.getUniqueValsFromColumn(dataTable.table.get(dataTable.table.size()-1));
-        double probabilityDenominator;
-        double[] probabilityNumerators = new double[uniqueClasses.size()]; //amount of occurances of each class stored at index corresponding to uniqueClasses
-        ArrayList<DataTuple.DiscreteTag> classColumn = dataTable.table.get(dataTable.table.size()-1);
-        probabilityDenominator = classColumn.size()-1; //dont count column name
+        ArrayList<DataTuple.DiscreteTag> columnToCheck= dataTable.table.get(dataTable.table.size()-1);
+        ArrayList<DataTuple.DiscreteTag> uniqueClasses = dataTable.getUniqueValsFromColumn(columnToCheck);
+        int probabilityDenominator =  columnToCheck.size()-1;
+        int[] probabilityNumerators = new int[uniqueClasses.size()];
 
         //Info(D)
         for(int i = 0; i<uniqueClasses.size();i++){
             //calculate each numerator
-            for(int j = 1; j<classColumn.size();j++){
-                if(classColumn.get(j)==uniqueClasses.get(i)){
+            for(int j = 1; j<columnToCheck.size();j++){
+                if(columnToCheck.get(j)==uniqueClasses.get(i)){
                     probabilityNumerators[i]++;
                 }
             }
             //-pi log2(pi)
-            double probability = probabilityNumerators[i]/probabilityDenominator;
+            double probability = (double)probabilityNumerators[i]/probabilityDenominator;
             entropy += -probability * (Math.log(probability)/Math.log(2));
 
         }
-
         return entropy;
     }
 
@@ -106,9 +135,11 @@ public class AttributeSelector {
 
     private void test() {
         DataTable table = new DataTable();
+        table.loadExampleData();
         LinkedList<DataTuple.DiscreteTag> attributes = table.getAttributeList();
         try {
-            DataTuple.DiscreteTag attribute= id3(table,attributes);
+            Attribute attribute= id3(table,attributes);
+            System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
         }

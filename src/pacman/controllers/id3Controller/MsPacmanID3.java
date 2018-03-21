@@ -32,8 +32,8 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
      */
     public MsPacmanID3(){
         dataSet = new DataTable();
-        dataSet.loadRecordedData();
-        //dataSet.loadExampleData();
+        //dataSet.loadRecordedData();
+        dataSet.loadExampleData();
         DataTable[] splitTables = dataSet.splitTableForHoldout(dataSet);
         attributeList = dataSet.getAttributeList();
 
@@ -64,8 +64,12 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
         /*Create headers for the tuple. Need to correspond to the headers in DataTable's loadRecordedData()
         method, CLASS column excluded*/
-        columns.add( DataTuple.DiscreteTag.POWER_PILL_DISTANCE);
-        columns.add( DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL);
+
+        if(Utilities.POWER_PILLS){
+            columns.add( DataTuple.DiscreteTag.POWER_PILL_DISTANCE);
+            columns.add( DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL);
+
+        }
 
         columns.add(DataTuple.DiscreteTag.PILL_DISTANCE);
         columns.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
@@ -109,19 +113,22 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         DataTuple.DiscreteTag closestPillDistance = dataSet.parseRawDistance(DataTuple.DiscreteTag.PILL_DISTANCE,pillDist);
         DataTuple.DiscreteTag directionToPill = dataSet.parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_PILL,pillMove);
 
-        //get values for closest power pill
-        int powerPillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
-                game.getPowerPillIndices(), Constants.DM.PATH);
-        int powerPillDist = game.getShortestPathDistance(pacmanIndex, powerPillIndex);
-        Constants.MOVE powerPillMove = game.getNextMoveTowardsTarget(pacmanIndex,
-                powerPillIndex, Constants.DM.PATH);
+        if(Utilities.POWER_PILLS){
+            //get values for closest power pill
+            int powerPillIndex = game.getClosestNodeIndexFromNodeIndex(pacmanIndex,
+                    game.getPowerPillIndices(), Constants.DM.PATH);
+            int powerPillDist = game.getShortestPathDistance(pacmanIndex, powerPillIndex);
+            Constants.MOVE powerPillMove = game.getNextMoveTowardsTarget(pacmanIndex,
+                    powerPillIndex, Constants.DM.PATH);
 
-        DataTuple.DiscreteTag closestPowerPillDistance = dataSet.parseRawDistance(DataTuple.DiscreteTag.POWER_PILL_DISTANCE,powerPillDist);
-        DataTuple.DiscreteTag directionToPowerPill = dataSet.parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL,powerPillMove);
+            DataTuple.DiscreteTag closestPowerPillDistance = dataSet.parseRawDistance(DataTuple.DiscreteTag.POWER_PILL_DISTANCE,powerPillDist);
+            DataTuple.DiscreteTag directionToPowerPill = dataSet.parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL,powerPillMove);
 
-        //Add vals to tuple, need to have as many as headers
-         vals.add(closestPowerPillDistance);
-         vals.add(directionToPowerPill);
+            //Add vals to tuple, need to have as many as headers
+            vals.add(closestPowerPillDistance);
+            vals.add(directionToPowerPill);
+        }
+
         vals.add(closestPillDistance);
         vals.add(directionToPill);
 
@@ -373,51 +380,52 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
                 System.out.println("\t Every in same class: "+node.label.toString());
                 return node;
             }
-            else if(attributeList.isEmpty()){
+            if(attributeList.isEmpty()){
                 node.isLeaf = true;
                 node.label = dataSet.majorityClassValue();
 
                 System.out.println("\t Attribute list is empty: "+node.label.toString());
                 return node;
-            }else{
-                DataTuple.DiscreteTag  attribute = selectionMethod.id3(dataSet,attributeList);
-                node.label=attribute;
-                attributeList.remove(attribute);
+            }
 
-                //label edges
-                ArrayList<DataTuple.DiscreteTag> column = dataSet.getColumn(dataSet,attribute);
-                ArrayList<DataTuple.DiscreteTag> edges = dataSet.getUniqueValsFromColumn(column);
-                //Partition table based on value of attribute T
-                DataTable[] partitionedSets = dataSet.partitionSetOnAttributeValue(attribute, dataSet);
+            AttributeSelector.Attribute attribute = selectionMethod.id3(dataSet,attributeList);
+            node.label=attribute.selectedAttribute;
+            attributeList.remove(attribute);
 
-                for(int i = 0; i<partitionedSets.length;i++){
-                    depth++;
+            //label edges
+            ArrayList<DataTuple.DiscreteTag> column = dataSet.getColumn(dataSet,attribute.selectedAttribute);
+            ArrayList<DataTuple.DiscreteTag> edges = dataSet.getUniqueValsFromColumn(column);
+            //Partition table based on value of attribute T
+            DataTable[] partitionedSets = dataSet.partitionSetOnAttributeValue(attribute.selectedAttribute, dataSet);
 
-                    if(partitionedSets[i].table.isEmpty()){
-                        Node child = new Node();
-                        child.parent=node;
+            for(int i = 0; i<attribute.uniqueAttributes.size();i++){
+                depth++;
 
-                        child.edge=edges.get(i);
-                        DataTuple.DiscreteTag classValue =  dataSet.majorityClassValue();
-                        child.label=classValue;
-                        child.isLeaf=true;
-                        node.children.add(child);
+                if(partitionedSets[i].table.isEmpty()){
+                    Node child = new Node();
+                    child.parent=node;
 
-                    }else {
+                    child.edge=edges.get(i);
+                    DataTuple.DiscreteTag classValue =  dataSet.majorityClassValue();
+                    child.label=classValue;
+                    child.isLeaf=true;
+                    node.children.add(child);
 
-                        Node child = generateTree(partitionedSets[i],attributeList,depth);
-                        child.parent=node;
+                }else {
 
-                        child.edge=edges.get(i);
-                        node.children.add(child);
+                    Node child = generateTree(partitionedSets[i],attributeList,depth);
+                    child.parent=node;
 
-                    }
-                    depth--;
+                    child.edge=edges.get(i);
+                    node.children.add(child);
+
                 }
+                depth--;
+            }
 
                 System.out.println();
                 return node;
-            }
+
 
         }
 

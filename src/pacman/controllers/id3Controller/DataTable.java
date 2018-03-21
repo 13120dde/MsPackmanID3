@@ -80,8 +80,11 @@ public class DataTable implements Cloneable {
         ArrayList<DataTuple.DiscreteTag> tuple = new ArrayList<>();
 
         //Power pill
-        tuple.add( DataTuple.DiscreteTag.POWER_PILL_DISTANCE);
-        tuple.add( DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL);
+        if(Utilities.POWER_PILLS){
+            tuple.add( DataTuple.DiscreteTag.POWER_PILL_DISTANCE);
+            tuple.add( DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL);
+
+        }
 
         //Pill
         tuple.add( DataTuple.DiscreteTag.PILL_DISTANCE);
@@ -151,10 +154,13 @@ public class DataTable implements Cloneable {
             ghostsEdible[2] = rawData[i].isInkyEdible;
             ghostsEdible[3] = rawData[i].isSueEdible;
 
-            //get power pill distance
-            tuple.add( parseRawDistance(DataTuple.DiscreteTag.POWER_PILL_DISTANCE,(rawData[i].powerpillDist)));
-            //get direction to power pill
-            tuple.add(parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL,rawData[i].powerpillMove));
+            if(Utilities.POWER_PILLS){
+                //get power pill distance
+                tuple.add( parseRawDistance(DataTuple.DiscreteTag.POWER_PILL_DISTANCE,(rawData[i].powerpillDist)));
+                //get direction to power pill
+                tuple.add(parseRawDirection(DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL,rawData[i].powerpillMove));
+
+            }
             //get pill distanceTag
             tuple.add( parseRawDistance(DataTuple.DiscreteTag.PILL_DISTANCE,rawData[i].pillDist));
             //get direction to pill
@@ -899,6 +905,7 @@ public class DataTable implements Cloneable {
             partitionedTable[j].table.remove(index);
         }
 
+        System.out.println();
         return partitionedTable;
     }
 

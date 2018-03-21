@@ -22,6 +22,7 @@ public class Utilities {
     private static Graph graph;
     public static final boolean LOG = false;
     public static final boolean ALL_GHOSTS = false;
+    public static final boolean POWER_PILLS = false;
 
     protected static Queue<MsPacmanID3.Node> queue = new LinkedList<>() ;
 
