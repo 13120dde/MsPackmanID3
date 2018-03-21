@@ -73,6 +73,7 @@ public class AttributeSelector {
 
 
     private double information(DataTable dataTable) {
+        System.out.println("\t calculating information for:"+dataTable.toString());
         double entropy=0;
         ArrayList<DataTuple.DiscreteTag> uniqueClasses = dataTable.getUniqueValsFromColumn(dataTable.table.get(dataTable.table.size()-1));
         double probabilityDenominator;

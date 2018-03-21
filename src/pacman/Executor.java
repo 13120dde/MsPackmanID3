@@ -84,15 +84,15 @@ public class Executor
 		exec.replayGame(fileName,visual);
 		*/
 		//run game for data collection
-		//exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new Legacy2TheReckoning(),visual);
 		boolean visual = true;
-		/*int i = 0;
-		while(i<10){
-			exec.runGameTimed(new MsPacmanID3(),new RandomGhosts(),visual);
+		//exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new AggressiveGhosts(),visual);
+		int i = 0;
+		/*while(i<10){
+			exec.runGameTimed(new MsPacmanID3(),new StarterGhosts(),visual);
 			i++;
 		}*/
 
-		exec.runGameTimed(new MsPacmanID3(),new RandomGhosts(),visual);
+		exec.runGameTimed(new MsPacmanID3(),new StarterGhosts(),visual);
 
 	}
 	

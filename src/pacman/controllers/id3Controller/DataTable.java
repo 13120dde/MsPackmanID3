@@ -11,6 +11,9 @@ import java.util.LinkedList;
  * 2d ArrayList where each column at index 0 holds the value of the column name. It is paramount that the CLASS column
  * is the last column in the list in order for the classifier to work.
  *
+ * OBSERVE: Every column must have unique enums DataTuple.DiscreteTag, even if different columns share similar elements
+ * eg class move != ghost move
+ *
  * Created by: Patrik Lind, 17-03-2018
  *
  * @param
@@ -48,8 +51,10 @@ public class DataTable implements Cloneable {
      * @return
      */
     protected  ArrayList<DataTuple.DiscreteTag>[] getTuple(int indexToTuple) {
-        if(indexToTuple<0 || indexToTuple>=table.get(0).size())
-            return null;
+        if(indexToTuple<0 )
+            indexToTuple=0;
+        if(indexToTuple>table.get(0).size()-1)
+            indexToTuple = table.get(0).size()-1;
 
         ArrayList<DataTuple.DiscreteTag>[] tuple = new ArrayList[2];
         tuple[0] = new ArrayList<>();
@@ -65,16 +70,47 @@ public class DataTable implements Cloneable {
      * in where attribute selection for the data table is hard coded. When adding additional attributes be aware of the
      * requirement of the CLASS label to be the last column in the table.
      *
+     * OBSERVE! When hardcoding additional columns, make sure that you hardcode in getMove callback in MsPacmanID#
+     *
      */
     protected void loadRecordedData() {
         DataTuple[] rawData= DataSaverLoader.LoadPacManData();
+       // Utilities.shuffleArray(rawData);
         //Create headers for columns and add them to the table
         ArrayList<DataTuple.DiscreteTag> tuple = new ArrayList<>();
+
+        //Power pill
+        tuple.add( DataTuple.DiscreteTag.POWER_PILL_DISTANCE);
+        tuple.add( DataTuple.DiscreteTag.DIRECTION_TO_POWER_PILL);
+
+        //Pill
         tuple.add( DataTuple.DiscreteTag.PILL_DISTANCE);
         tuple.add(DataTuple.DiscreteTag.DIRECTION_TO_PILL);
-        tuple.add(DataTuple.DiscreteTag.GHOST_DISTANCE);
-        tuple.add(DataTuple.DiscreteTag.GHOST_DIRECTION);
-        tuple.add(DataTuple.DiscreteTag.GHOST_EDIBLE);
+
+        //Blinky
+      //  tuple.add(DataTuple.DiscreteTag.BLINKY_DISTANCE);
+        tuple.add(DataTuple.DiscreteTag.BLINKY_DIRECTION);
+      //  tuple.add(DataTuple.DiscreteTag.BLINKY_EDIBLE);
+
+        //Pinky
+        //tuple.add(DataTuple.DiscreteTag.PINKY_DISTANCE);
+        tuple.add(DataTuple.DiscreteTag.PINKY_DIRECTION);
+        //tuple.add(DataTuple.DiscreteTag.PINKY_EDIBLE);
+
+        //Inky
+        //tuple.add(DataTuple.DiscreteTag.INKY_DISTANCE);
+        tuple.add(DataTuple.DiscreteTag.INKY_DIRECTION);
+        //tuple.add(DataTuple.DiscreteTag.INKY_EDIBLE);
+
+        //Sue
+        //tuple.add(DataTuple.DiscreteTag.SUE_DISTANCE);
+        tuple.add(DataTuple.DiscreteTag.SUE_DIRECTION);
+        //tuple.add(DataTuple.DiscreteTag.SUE_EDIBLE);
+
+
+        tuple.add(DataTuple.DiscreteTag.CLOSEST_GHOST_DISTANCE);
+        tuple.add(DataTuple.DiscreteTag.CLOSEST_GHOST_DIRECTION);
+        tuple.add(DataTuple.DiscreteTag.CLOSEST_GHOST_EDIBLE);
         tuple.add(DataTuple.DiscreteTag.CLASS);        //MUST BE LAST!!
 
         addTuple(tuple);
@@ -88,16 +124,16 @@ public class DataTable implements Cloneable {
             int indexToClosestGhost = 0;
             Constants.MOVE closestGhostDir = rawData[i].blinkyDir;
             int closestGhostDistance = rawData[i].blinkyDist;
-            if(rawData[i].inkyDist<closestGhostDistance){
-                closestGhostDir = rawData[i].inkyDir;
-                closestGhostDistance = rawData[i].inkyDist;
-                indexToClosestGhost=1;
-            }
             if(rawData[i].pinkyDist<closestGhostDistance){
                 closestGhostDir = rawData[i].pinkyDir;
                 closestGhostDistance = rawData[i].pinkyDist;
-                indexToClosestGhost=2;
+                indexToClosestGhost=1;
 
+            }
+            if(rawData[i].inkyDist<closestGhostDistance){
+                closestGhostDir = rawData[i].inkyDir;
+                closestGhostDistance = rawData[i].inkyDist;
+                indexToClosestGhost=2;
             }
             if(rawData[i].sueDist<closestGhostDistance){
                 closestGhostDir = rawData[i].sueDir;
@@ -106,19 +142,56 @@ public class DataTable implements Cloneable {
 
             }
             ghostsEdible[0] = rawData[i].isBlinkyEdible;
-            ghostsEdible[1] = rawData[i].isInkyEdible;
-            ghostsEdible[2] = rawData[i].isPinkyEdible;
+            ghostsEdible[1] = rawData[i].isPinkyEdible;
+            ghostsEdible[2] = rawData[i].isInkyEdible;
             ghostsEdible[3] = rawData[i].isSueEdible;
 
+            //get power pill distance
+            tuple.add( pillDistance(rawData[i].powerpillDist) );
+            //get direction to power pill
+            tuple.add(parseMoveToPowerPill(rawData[i].powerpillMove));
             //get pill distanceTag
             tuple.add( pillDistance(rawData[i].pillDist) );
             //get direction to pill
             tuple.add(parseMoveToPill(rawData[i].pillMove));
-            //get discrete distanceTag
+
+            //blinky
+          //  tuple.add(ghostDistance(rawData[i].blinkyDist));
+            tuple.add(parseMoveBlinky(rawData[i].blinkyDir));
+            /*if(ghostsEdible[0])
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
+            else
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
+*/
+            //pinky
+  //          tuple.add(ghostDistance(rawData[i].pinkyDist));
+            tuple.add(parseMovePinky(rawData[i].pinkyDir));
+    /*        if(ghostsEdible[1])
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
+            else
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
+*/
+            //inky
+  //          tuple.add(ghostDistance(rawData[i].inkyDist));
+            tuple.add(parseMoveInky(rawData[i].inkyDir));
+    /*        if(ghostsEdible[2])
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
+            else
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
+*/
+
+            //sue
+    //        tuple.add(ghostDistance(rawData[i].sueDist));
+            tuple.add(parseMoveSue(rawData[i].sueDir));
+      /*      if(ghostsEdible[3])
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
+            else
+                tuple.add(DataTuple.DiscreteTag.EDIBLE_FALSE);
+*/
+
+            //closest ghost
             tuple.add(ghostDistance(closestGhostDistance));
-            //get his direction
-            tuple.add(parseMoveGhost(closestGhostDir));
-            //get edible
+            tuple.add(parseMoveClosestGhost(closestGhostDir));
             if (ghostsEdible[indexToClosestGhost])
                 tuple.add(DataTuple.DiscreteTag.EDIBLE_TRUE);
             else
@@ -187,7 +260,7 @@ public class DataTable implements Cloneable {
         return direction;
     }
 
-    protected DataTuple.DiscreteTag parseMoveGhost(Constants.MOVE directionChosen) {
+    protected DataTuple.DiscreteTag parseMoveClosestGhost(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
         DataTuple.DiscreteTag direction= null;
         switch (s){
@@ -208,6 +281,91 @@ public class DataTable implements Cloneable {
         }
         return direction;
     }
+    protected DataTuple.DiscreteTag parseMoveSue(Constants.MOVE directionChosen) {
+        final String s = directionChosen.name().toUpperCase();
+        DataTuple.DiscreteTag direction= null;
+        switch (s){
+            case "UP":
+                direction = DataTuple.DiscreteTag.SUE_MOVE_UP;
+                break;
+            case "DOWN":
+                direction = DataTuple.DiscreteTag.SUE_MOVE_DOWN;
+                break;
+            case "LEFT":
+                direction = DataTuple.DiscreteTag.SUE_MOVE_LEFT;
+                break;
+            case "RIGHT":
+                direction = DataTuple.DiscreteTag.SUE_MOVE_RIGHT;
+                break;
+            case "NEUTRAL":
+                direction = DataTuple.DiscreteTag.SUE_MOVE_NEUTRAL;
+        }
+        return direction;
+    }
+    protected DataTuple.DiscreteTag parseMovePinky(Constants.MOVE directionChosen) {
+        final String s = directionChosen.name().toUpperCase();
+        DataTuple.DiscreteTag direction= null;
+        switch (s){
+            case "UP":
+                direction = DataTuple.DiscreteTag.PINKY_MOVE_UP;
+                break;
+            case "DOWN":
+                direction = DataTuple.DiscreteTag.PINKY_MOVE_DOWN;
+                break;
+            case "LEFT":
+                direction = DataTuple.DiscreteTag.PINKY_MOVE_LEFT;
+                break;
+            case "RIGHT":
+                direction = DataTuple.DiscreteTag.PINKY_MOVE_RIGHT;
+                break;
+            case "NEUTRAL":
+                direction = DataTuple.DiscreteTag.PINKY_MOVE_NEUTRAL;
+        }
+        return direction;
+    }
+    protected DataTuple.DiscreteTag parseMoveInky(Constants.MOVE directionChosen) {
+        final String s = directionChosen.name().toUpperCase();
+        DataTuple.DiscreteTag direction= null;
+        switch (s){
+            case "UP":
+                direction = DataTuple.DiscreteTag.INKY_MOVE_UP;
+                break;
+            case "DOWN":
+                direction = DataTuple.DiscreteTag.INKY_MOVE_DOWN;
+                break;
+            case "LEFT":
+                direction = DataTuple.DiscreteTag.INKY_MOVE_LEFT;
+                break;
+            case "RIGHT":
+                direction = DataTuple.DiscreteTag.INKY_MOVE_RIGHT;
+                break;
+            case "NEUTRAL":
+                direction = DataTuple.DiscreteTag.INKY_MOVE_NEUTRAL;
+        }
+        return direction;
+    }
+
+    protected DataTuple.DiscreteTag parseMoveBlinky(Constants.MOVE directionChosen) {
+        final String s = directionChosen.name().toUpperCase();
+        DataTuple.DiscreteTag direction= null;
+        switch (s){
+            case "UP":
+                direction = DataTuple.DiscreteTag.BLINKY_MOVE_UP;
+                break;
+            case "DOWN":
+                direction = DataTuple.DiscreteTag.BLINKY_MOVE_DOWN;
+                break;
+            case "LEFT":
+                direction = DataTuple.DiscreteTag.BLINKY_MOVE_LEFT;
+                break;
+            case "RIGHT":
+                direction = DataTuple.DiscreteTag.BLINKY_MOVE_RIGHT;
+                break;
+            case "NEUTRAL":
+                direction = DataTuple.DiscreteTag.BLINKY_MOVE_NEUTRAL;
+        }
+        return direction;
+    }
 
     protected DataTuple.DiscreteTag parseMoveToPill(Constants.MOVE directionChosen) {
         final String s = directionChosen.name().toUpperCase();
@@ -224,6 +382,27 @@ public class DataTable implements Cloneable {
                 break;
             case "RIGHT":
                 direction = DataTuple.DiscreteTag.TO_PILL_RIGHT;
+
+        }
+
+        return direction;
+    }
+
+    protected DataTuple.DiscreteTag parseMoveToPowerPill(Constants.MOVE directionChosen) {
+        final String s = directionChosen.name().toUpperCase();
+        DataTuple.DiscreteTag direction= null;
+        switch (s){
+            case "UP":
+                direction = DataTuple.DiscreteTag.POWER_PILL_UP;
+                break;
+            case "DOWN":
+                direction = DataTuple.DiscreteTag.POWER_PILL_DOWN;
+                break;
+            case "LEFT":
+                direction = DataTuple.DiscreteTag.POWER_PILL_LEFT;
+                break;
+            case "RIGHT":
+                direction = DataTuple.DiscreteTag.POWER_PILL_RIGHT;
 
         }
 
@@ -512,7 +691,7 @@ public class DataTable implements Cloneable {
         //T label = getClassLabel(13);
      //   ArrayList<T> col = getColumn(this, (T) DiscreteValues.CREDIT_RATING);
         try {
-            DataTable[] tablesPartitioned =  partitionSetOnAttributeValue( DataTuple.DiscreteTag.GHOST_DIRECTION,this);
+            DataTable[] tablesPartitioned =  partitionSetOnAttributeValue( DataTuple.DiscreteTag.CLOSEST_GHOST_DIRECTION,this);
         } catch (Exception e) {
             e.printStackTrace();
         }
