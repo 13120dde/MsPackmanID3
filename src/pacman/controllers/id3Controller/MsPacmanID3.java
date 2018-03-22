@@ -7,6 +7,7 @@ import pacman.game.Game;
 
 import java.util.*;
 
+import static pacman.controllers.id3Controller.Utilities.LOG;
 import static pacman.game.Constants.MOVE.*;
 
 /**AI controller based on ID3 decision tree algorithm.
@@ -19,10 +20,9 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
 
     private DataTable dataSet;
-    private LinkedList<DataTuple.DiscreteTag> attributeList;
+    private Attribute attributeList;
     private AttributeSelector selectionMethod;
 
-    private boolean treeGenerated = false;
     private Node tree;
     private int nodeCount =0;
 
@@ -32,16 +32,14 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
      */
     public MsPacmanID3(){
         dataSet = new DataTable();
-        //dataSet.loadRecordedData();
-        dataSet.loadExampleData();
+        dataSet.loadRecordedData();
+        //dataSet.loadExampleData();
         DataTable[] splitTables = dataSet.splitTableForHoldout(dataSet);
-        attributeList = dataSet.getAttributeList();
-
+        attributeList = new Attribute(null,dataSet.getAttributeList());
         selectionMethod = new AttributeSelector();
         tree = new Node();
         try {
-            tree = tree.generateTree(splitTables[0],attributeList,0);
-            treeGenerated =true;
+            tree = generateTree(splitTables[0],attributeList,0);
             tree.accuracy = getAccuracyOfTree(splitTables[1]);
             System.out.println("Accuracy of tree: "+tree.accuracy);
             Utilities.visualizeTree(tree);
@@ -51,6 +49,97 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
         //  Utilities.createGraph(tree);
 
+    }
+
+
+    /**A recursive method to generate a decision tree. Input parameters are the data table on which the tree builds
+     * itself upon and a list with attributes on which it decides the best attribute to select for the next node. The
+     * selection is based on ID3.
+     *
+     * @param dataSet : DataTable
+     * @param attributeList : LinkedList<T>
+     * @return
+     */
+    private Node generateTree(DataTable dataSet, Attribute attributeList, int depth) throws Exception {
+        System.out.println("### in generateTree ###");
+        Node node = new Node();
+        node.attribute=attributeList;
+
+
+        nodeCount++;
+        node.id =nodeCount;
+        node.depthOfNode=depth;
+
+
+
+        if(dataSet.everyTupleInSameClass()){
+            node.isLeaf=true;
+            node.label= dataSet.getClassLabel(1); // at index 0 is column header value
+            System.out.println("\t Every in same class: "+node.label.toString());
+            return node;
+        }
+        if(attributeList.isEmpty()){
+            node.isLeaf = true;
+            node.label = dataSet.majorityClassValue();
+
+            System.out.println("\t Attribute list is empty: "+attributeList.toString());
+            return node;
+        }
+
+        Attribute attribute = selectionMethod.id3(dataSet,attributeList);
+        if(LOG){
+            System.out.println("\t-->Selected attribute: "+attribute.toString());
+
+        }
+
+        node.label=attribute.selectedAttribute;
+        node.attribute.list.remove(node.label);
+        // attributeList.remove(attribute.selectedAttribute);
+
+        //label edges
+        ArrayList<DataTuple.DiscreteTag> column = dataSet.getColumn(dataSet,attribute.selectedAttribute);
+        ArrayList<DataTuple.DiscreteTag> edges = dataSet.getUniqueValsFromColumn(column);
+        //Partition table based on value of attribute T
+        //  DataTable[] partitionedSets = dataSet.partitionSetOnAttributeValue(attribute.selectedAttribute, dataSet);
+
+        for(int i = 0; i<attribute.list.size(); i++){
+            DataTable partition = DataTable.partition(dataSet,attribute.selectedAttribute,attribute.list.get(i));
+            depth++;
+
+            if(partitionIsEmpty(partition)){
+                Node child = new Node();
+                child.parent=node;
+
+                child.edge=edges.get(i);
+                DataTuple.DiscreteTag classValue =  dataSet.majorityClassValue();
+                child.label=classValue;
+                child.isLeaf=true;
+                node.children.add(child);
+
+            }else {
+
+                Node child = generateTree(partition,node.attribute,depth);
+                child.parent=node;
+
+                child.edge=edges.get(i);
+                node.children.add(child);
+
+            }
+            depth--;
+        }
+
+        System.out.println();
+        return node;
+
+
+    }
+
+    private boolean partitionIsEmpty(DataTable partition) {
+        if(partition.table.isEmpty())
+            return true;
+        if(partition.table.get(0).size()<=1)
+            return true;
+        return false;
     }
 
 
@@ -187,7 +276,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         if(move == DataTuple.DiscreteTag.CLASS_RIGHT)
             returnMove = RIGHT;
 
-        if(Utilities.LOG){
+        if(LOG){
             System.out.println("\n--->Closest ghost: "+ghosts.get(0).toString());
             System.out.println("\t===>Closest pill distance: "+closestPillDistance+", direction to: "+directionToPill);
             System.out.println("\t\t>>>>>>> Classified as:" +move.toString());
@@ -356,78 +445,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         protected ArrayList<Node> children = new ArrayList<>();
         protected  double accuracy;
         protected int id =0, depthOfNode=0, xPos;
-
-        /**A recursive method to generate a decision tree. Input parameters are the data table on which the tree builds
-         * itself upon and a list with attributes on which it decides the best attribute to select for the next node. The
-         * selection is based on ID3.
-         *
-         * @param dataSet : DataTable
-         * @param attributeList : LinkedList<T>
-         * @return
-         */
-        private Node generateTree(DataTable dataSet, LinkedList<DataTuple.DiscreteTag> attributeList, int depth) throws Exception {
-            System.out.println("### in generateTree ###");
-            Node node = new Node();
-            nodeCount++;
-            node.id =nodeCount;
-            node.depthOfNode=depth;
-
-
-
-            if(dataSet.everyTupleInSameClass()){
-                node.isLeaf=true;
-                node.label= dataSet.getClassLabel(1); // at index 0 is column header value
-                System.out.println("\t Every in same class: "+node.label.toString());
-                return node;
-            }
-            if(attributeList.isEmpty()){
-                node.isLeaf = true;
-                node.label = dataSet.majorityClassValue();
-
-                System.out.println("\t Attribute list is empty: "+node.label.toString());
-                return node;
-            }
-
-            AttributeSelector.Attribute attribute = selectionMethod.id3(dataSet,attributeList);
-            node.label=attribute.selectedAttribute;
-            attributeList.remove(attribute);
-
-            //label edges
-            ArrayList<DataTuple.DiscreteTag> column = dataSet.getColumn(dataSet,attribute.selectedAttribute);
-            ArrayList<DataTuple.DiscreteTag> edges = dataSet.getUniqueValsFromColumn(column);
-            //Partition table based on value of attribute T
-            DataTable[] partitionedSets = dataSet.partitionSetOnAttributeValue(attribute.selectedAttribute, dataSet);
-
-            for(int i = 0; i<attribute.uniqueAttributes.size();i++){
-                depth++;
-
-                if(partitionedSets[i].table.isEmpty()){
-                    Node child = new Node();
-                    child.parent=node;
-
-                    child.edge=edges.get(i);
-                    DataTuple.DiscreteTag classValue =  dataSet.majorityClassValue();
-                    child.label=classValue;
-                    child.isLeaf=true;
-                    node.children.add(child);
-
-                }else {
-
-                    Node child = generateTree(partitionedSets[i],attributeList,depth);
-                    child.parent=node;
-
-                    child.edge=edges.get(i);
-                    node.children.add(child);
-
-                }
-                depth--;
-            }
-
-                System.out.println();
-                return node;
-
-
-        }
+        protected Attribute attribute;
 
     }
 

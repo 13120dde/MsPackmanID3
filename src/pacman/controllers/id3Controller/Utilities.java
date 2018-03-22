@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Utilities {
 
     private static Graph graph;
-    public static final boolean LOG = false;
+    public static final boolean LOG = true;
     public static final boolean ALL_GHOSTS = false;
     public static final boolean POWER_PILLS = false;
 

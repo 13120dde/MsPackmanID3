@@ -34,7 +34,7 @@ public class DataTable implements Cloneable {
      *
      * @param tuple : ArrayList<T>
      */
-    private void addTuple(ArrayList<DataTuple.DiscreteTag> tuple) {
+    protected void addTuple(ArrayList<DataTuple.DiscreteTag> tuple) {
         for(int i = 0; i<tuple.size(); i++){
             if(table.size()<i+1){
                 table.add(i,new ArrayList<DataTuple.DiscreteTag>());
@@ -51,8 +51,8 @@ public class DataTable implements Cloneable {
      * @return
      */
     protected  ArrayList<DataTuple.DiscreteTag>[] getTuple(int indexToTuple) {
-        if(indexToTuple<0 )
-            indexToTuple=0;
+        if(indexToTuple<=0 )
+            indexToTuple=1;
         if(indexToTuple>table.get(0).size()-1)
             indexToTuple = table.get(0).size()-1;
 
@@ -717,13 +717,14 @@ public class DataTable implements Cloneable {
      *
      * @return : LinkedList<T>
      */
-    protected LinkedList<DataTuple.DiscreteTag> getAttributeList() {
-        LinkedList<DataTuple.DiscreteTag> list = new LinkedList<>();
+    protected ArrayList<DataTuple.DiscreteTag> getAttributeList() {
+        ArrayList<DataTuple.DiscreteTag> list = new ArrayList<>();
         for(ArrayList<DataTuple.DiscreteTag> a : table){
             list.add(a.get(0));
         }
         //remove class column
-        list.removeLast();
+        list.remove(list.size()-1);
+
         return list;
     }
 
@@ -947,14 +948,14 @@ public class DataTable implements Cloneable {
             DataTable table = dataSet.clone();
             int rows = table.table.get(0).size();
             for(int i =0;i<rows;i++){
-                if(i<= (int)rows*0.67){
-                    ArrayList<DataTuple.DiscreteTag>[] tuple = table.getTuple(i);
+                ArrayList<DataTuple.DiscreteTag>[] tuple = table.getTuple(i);
+                if(i==0){
+                    arr[0].addTuple(tuple[0]);
+                    arr[1].addTuple(tuple[0]);
+                }
+                else if(i<= (int)rows*0.67){
                     arr[0].addTuple(tuple[1]);
-                    if(i==0)
-                        arr[1].addTuple(tuple[1]);
-
                 }else{
-                    ArrayList<DataTuple.DiscreteTag>[] tuple = table.getTuple(i);
                     arr[1].addTuple(tuple[1]);
                 }
 
@@ -980,7 +981,7 @@ public class DataTable implements Cloneable {
         ArrayList a = getUniqueValsFromColumn(table.get(0));
        boolean flag = everyTupleInSameClass();
         DataTuple.DiscreteTag val =  majorityClassValue();
-        LinkedList<DataTuple.DiscreteTag> attrList = getAttributeList();
+        ArrayList<DataTuple.DiscreteTag> attrList = getAttributeList();
         ArrayList<DataTuple.DiscreteTag>[] tuple = getTuple(1);
      //   tuple =getTuple(new Game());
         DataTable[] tables = splitTableForHoldout(this);
@@ -1123,11 +1124,13 @@ public class DataTable implements Cloneable {
         StringBuilder sb = new StringBuilder();
 
         ArrayList<String> columnNames = new ArrayList<>();
+        sb.append("\nColumns in table: \n");
         for (ArrayList<DataTuple.DiscreteTag> col : table){
-            sb.append("Columns in table: "+col.get(0).toString()+"\t\n Number of tuples: "+(col.size()-1));
+            sb.append(col.get(0).toString()+"\t|\t");
         }
+        sb.append("\nNumber of tuples:"+getTableSize());
 
-        return "### DataTable\n\t"+sb.toString();
+        return sb.toString();
     }
 
 
@@ -1140,7 +1143,41 @@ public class DataTable implements Cloneable {
 
     }
 
+
+
     public double getTableSize() {
-        return table.get(0).size()-1;
+        return table.get(0).size();
+    }
+
+    public static DataTable partition(DataTable dataSet, DataTuple.DiscreteTag selectedAttribute, DataTuple.DiscreteTag attributeValue) {
+
+
+        DataTable partition = new DataTable();
+        try {
+
+            ArrayList<DataTuple.DiscreteTag> column = dataSet.getColumn(dataSet,selectedAttribute);
+            ArrayList<DataTuple.DiscreteTag>[] tuple = dataSet.getTuple(0);
+
+            partition.addTuple(tuple[0]);
+            for(int i = 1;i<column.size();i++){
+
+                if(column.get(i)==attributeValue){
+                    tuple= dataSet.getTuple(i);
+                    partition.addTuple(tuple[1]);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        int index=0;
+        for(int i =0;i<partition.table.size();i++){
+            if(partition.table.get(i).get(0)==selectedAttribute){
+                index=i;
+            }
+        }
+        partition.table.remove(index);
+        System.out.println();
+        return partition;
     }
 }
