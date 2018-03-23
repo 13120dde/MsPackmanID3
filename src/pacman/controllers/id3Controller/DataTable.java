@@ -347,7 +347,7 @@ public class DataTable implements Cloneable {
         majorityValue = uniqueVals.get(index);
 
 
-        if(Utilities.log)
+        if(Utilities.LOG)
             System.out.println("### IN majorityClassValue\n\t "+majorityValue+", count= "+highest);
         return majorityValue;
     }

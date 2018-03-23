@@ -66,7 +66,7 @@ public class AttributeSelector {
 
         }
         bestAttribute = columns.get(indexOfHighest);
-        if(Utilities.log)
+        if(Utilities.LOG)
             System.out.println("\t\tSelected attribute: "+bestAttribute.toString());
         return bestAttribute;
     }

@@ -22,7 +22,6 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
     private LinkedList<DataTuple.DiscreteTag> attributeList;
     private AttributeSelector selectionMethod;
 
-    private boolean treeGenerated = false;
     private Node tree;
     private int nodeCount =0;
 
@@ -40,7 +39,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         tree = new Node();
         try {
             tree = tree.generateTree(splitTables[0],attributeList);
-            treeGenerated =true;
+            Utilities.visualizeTreeBFS(tree);
             getAccuracyOfTree(splitTables[1]);
 
         } catch (Exception e) {
@@ -205,7 +204,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
         if(move == DataTuple.DiscreteTag.CLASS_RIGHT)
             returnMove = RIGHT;
 
-        if(Utilities.log){
+        if(Utilities.LOG){
             System.out.println("\n--->Closest ghost: "+ghostValues.toString());
             System.out.println("\t===>Closest pill distance: "+closestPillDistance+", direction to: "+directionToPill);
             System.out.println("\t\t>>>>>>> Classified as:" +move.toString());
@@ -263,12 +262,13 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
 
     /**The node object on which the tree is being build with.
      */
-    private class Node{
+    protected class Node{
 
         protected DataTuple.DiscreteTag label, edge;
         protected boolean isLeaf = false;
         protected Node parent = null;
         protected ArrayList<Node> children = new ArrayList<>();
+        protected int id, xPos, depthOfNode;
 
         /**A recursive method to generate a decision tree. Input parameters are the data table on which the tree builds
          * itself upon and a list with attributes on which it decides the best attribute to select for the next node. The
@@ -283,6 +283,7 @@ public class MsPacmanID3 extends Controller<Constants.MOVE>{
             Node node = new Node();
 
             nodeCount++;
+            node.id=nodeCount;
 
             if(dataSet.everyTupleInSameClass()){
                 node.isLeaf=true;
