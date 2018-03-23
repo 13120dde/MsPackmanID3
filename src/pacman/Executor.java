@@ -17,14 +17,8 @@ import pacman.controllers.KeyBoardInput;
 import pacman.controllers.examples.AggressiveGhosts;
 import pacman.controllers.examples.Legacy;
 import pacman.controllers.examples.Legacy2TheReckoning;
-import pacman.controllers.examples.NearestPillPacMan;
-import pacman.controllers.examples.NearestPillPacManVS;
-import pacman.controllers.examples.RandomGhosts;
-import pacman.controllers.examples.RandomNonRevPacMan;
-import pacman.controllers.examples.RandomPacMan;
 import pacman.controllers.examples.StarterGhosts;
-import pacman.controllers.examples.StarterPacMan;
-import pacman.controllers.id3Controller.MsPacmanID3;
+import pacman.controllers.id3Controller.ID3Controller;
 import pacman.game.Game;
 import pacman.game.GameView;
 
@@ -80,19 +74,19 @@ public class Executor
 		//run game in asynchronous mode and record it to file for replay at a later stage.
 		/*boolean visual=true;
 		String fileName="replay.txt";
-		exec.runGameTimedRecorded(new MsPacmanID3(),new RandomGhosts(),visual,fileName);
+		exec.runGameTimedRecorded(new ID3Controller(),new RandomGhosts(),visual,fileName);
 		exec.replayGame(fileName,visual);
 		*/
 		//run game for data collection
 		boolean visual = true;
-		//exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new AggressiveGhosts(),visual);
+		//exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new StarterGhosts(),visual);
 		int i = 0;
 		/*while(i<10){
-			exec.runGameTimed(new MsPacmanID3(),new StarterGhosts(),visual);
+			exec.runGameTimed(new ID3Controller(),new StarterGhosts(),visual);
 			i++;
 		}*/
 
-		exec.runGameTimed(new MsPacmanID3(),new StarterGhosts(),visual);
+		exec.runGameTimed(new ID3Controller(),new StarterGhosts(),visual);
 
 	}
 	

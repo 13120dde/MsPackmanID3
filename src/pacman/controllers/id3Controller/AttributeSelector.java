@@ -3,6 +3,7 @@ package pacman.controllers.id3Controller;
 import dataRecording.DataTuple;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**This class is responsible for selecting the best attribute from a data set, where the best attribute is the one
  * with purest classifiers.
@@ -15,12 +16,8 @@ import java.util.ArrayList;
  */
 public class AttributeSelector {
 
-    private ArrayList<DataTuple.DiscreteTag> uniqueClasses;
+    private ArrayList<String> uniqueClasses;
     private double probabilityDenominator;
-
-
-
-
 
 
     /**Calculates the entropy for each attribute (column in the data set) in the provided list and returns
@@ -32,14 +29,13 @@ public class AttributeSelector {
      * @param attributeList : LinkedList
      * @return attribute : T
      */
-    protected Attribute id3(DataTable dataTable, Attribute attributeList) throws Exception {
+    protected Attribute id3(DataTable dataTable, Attribute attributeList) {
 
-        System.out.println("### IN id3 ###");
         double averageEntropy;
 
         probabilityDenominator = dataTable.table.get(0).size()-1;
          uniqueClasses = dataTable.getUniqueValsFromColumn(
-                 dataTable.getColumn(dataTable, DataTuple.DiscreteTag.CLASS));
+                 dataTable.getColumn(dataTable, "class"));
 
         //calculate Info(D) for the whole table
         averageEntropy = generalEntropy(dataTable);
@@ -51,11 +47,11 @@ public class AttributeSelector {
         for(int i= 0; i<attributeList.list.size();i++){
 
             //split tables on element in attribute's column
-            ArrayList<DataTuple.DiscreteTag> columnToCheck = dataTable.getColumn(dataTable,attributeList.list.get(i));
-            ArrayList<DataTuple.DiscreteTag> uniqueValsInColumn = dataTable.getUniqueValsFromColumn(columnToCheck);
+            ArrayList<String> columnToCheck = dataTable.getColumn(dataTable,attributeList.list.get(i));
+            ArrayList<String> uniqueValsInColumn = dataTable.getUniqueValsFromColumn(columnToCheck);
 
             DataTable[] splitTables = new DataTable[uniqueValsInColumn.size()];
-            ArrayList<DataTuple.DiscreteTag>[] tuple = dataTable.getTuple(0);
+            ArrayList<String>[] tuple = dataTable.getTuple(0);
             for(int k =0; k<splitTables.length; k++){
                 splitTables[k] = new DataTable();
                 splitTables[k].addTuple(tuple[0]);
@@ -76,13 +72,13 @@ public class AttributeSelector {
             for(int k = 0; k<splitTables.length;k++){
 
 
-                ArrayList<DataTuple.DiscreteTag> classColumn = splitTables[k].getColumn(splitTables[k], DataTuple.DiscreteTag.CLASS);
-                ArrayList<DataTuple.DiscreteTag> uniqueClassesInSplit = splitTables[k].getUniqueValsFromColumn(classColumn);
+                ArrayList<String> classColumn = splitTables[k].getColumn(splitTables[k], "class");
+                ArrayList<String> uniqueClassesInSplit = splitTables[k].getUniqueValsFromColumn(classColumn);
                 denominator = splitTables[k].table.get(0).size()-1; //Disregard column name
                 double[] numerators= new double[uniqueClassesInSplit.size()];
 
                 //Get numerators in split
-                ArrayList<DataTuple.DiscreteTag> splitTableClassCol = splitTables[k].getColumn(splitTables[k], DataTuple.DiscreteTag.CLASS);
+                ArrayList<String> splitTableClassCol = splitTables[k].getColumn(splitTables[k], "class");
                 for(int m = 1; m<splitTableClassCol.size();m++){
                     for(int n = 0;n<uniqueClassesInSplit.size();n++){
                         if(splitTableClassCol.get(m)==uniqueClassesInSplit.get(n)){
@@ -119,22 +115,29 @@ public class AttributeSelector {
             }
         }
 
-        DataTuple.DiscreteTag highestAttribute = attributeList.list.get(indexToHighest);
-        ArrayList<DataTuple.DiscreteTag> uniqueElements = dataTable.getUniqueValsFromColumn(
-                dataTable.getColumn(dataTable,highestAttribute));
+        String highestAttribute = attributeList.list.get(indexToHighest);
+        LinkedList<String> uniqueElements = new LinkedList<>(dataTable.getUniqueValsFromColumn(
+                dataTable.getColumn(dataTable,highestAttribute)));
 
         Attribute attribute = new Attribute(highestAttribute,uniqueElements);
-        System.out.println();
+        if(Utilities.LOG){
+            printResult(averageEntropy,entropies,attributeList, attribute);
+        }
 
         return attribute;
 
     }
 
+    /**Calculates entropy for the whole table
+     *
+     * @param dataTable : DataTable
+     * @return general entropy: Double
+     */
     private double generalEntropy(DataTable dataTable) {
-        System.out.println("\t calculating generalEntropy for:"+dataTable.toString());
+
         double entropy=0;
         double denominator = dataTable.table.get(0).size()-1;
-        ArrayList<DataTuple.DiscreteTag> columnToCheck= dataTable.table.get(dataTable.table.size()-1);
+        ArrayList<String> columnToCheck= dataTable.table.get(dataTable.table.size()-1);
 
         int[] probabilityNumerators = new int[uniqueClasses.size()];
 
@@ -155,6 +158,20 @@ public class AttributeSelector {
     }
 
 
+    private void printResult(double averageEntropy, double[] entropies, Attribute attributeList, Attribute selected) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("### IN id3 ###\n");
+        sb.append("\tAverage entropy of D:"+averageEntropy+"\n");
+        String list ="";
+        for(int i = 0;i<entropies.length;i++){
+            list+="\t"+attributeList.list.get(i)+" - "+entropies[i]+"\n";
+        }
+        sb.append(list);
+        sb.append("\tSelected "+selected.toString());
+        System.out.println(sb.toString());
+    }
+
+
     //Just for testing
     public static void main(String[] args) {
         new AttributeSelector().test();
@@ -163,15 +180,8 @@ public class AttributeSelector {
     private void test() {
         DataTable table = new DataTable();
         table.loadExampleData();
-        Attribute attributeList = new Attribute(null,table.getAttributeList());
 
-        try {
-            Attribute attribute= id3(table,attributeList);
-            //DataTable[] tables = table.partitionSetOnAttributeValue(attribute.selectedAttribute,table);
-            //Attribute attribute2= id3(tables[0],attribute);
-            System.out.println();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+      //  Attribute attribute= id3(table,attributeList);
+
     }
 }

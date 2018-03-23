@@ -2,17 +2,25 @@ package pacman.controllers.id3Controller;
 
 import dataRecording.DataTuple;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Attribute{
 
-    protected DataTuple.DiscreteTag selectedAttribute;
-    protected ArrayList<DataTuple.DiscreteTag> list;
+    protected String selectedAttribute;
+    protected LinkedList<String> list;
 
 
-    protected Attribute(DataTuple.DiscreteTag selectedAttribute,ArrayList<DataTuple.DiscreteTag> list){
+    protected Attribute(String selectedAttribute,LinkedList<String> list){
         this.selectedAttribute=selectedAttribute;
         this.list = list;
+    }
+
+    public Attribute(Attribute attribute) {
+        this.selectedAttribute=attribute.selectedAttribute;
+        this.list = new LinkedList<>();
+        for(String s : attribute.list)
+            this.list.add(s);
+
     }
 
     protected boolean isEmpty(){
@@ -22,10 +30,10 @@ public class Attribute{
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("Attribute: "+selectedAttribute+" = {");
-        for (DataTuple.DiscreteTag tag: list) {
+        for (String tag: list) {
             sb.append(tag+", ");
         }
-        sb.append("}");
+        sb.append("\b\b}");
         return sb.toString();
     }
 

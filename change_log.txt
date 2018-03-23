@@ -77,9 +77,9 @@ WCCI12_v1.0
 The biggest change in this version is the pre-computing of paths. This makes it faster to obtain paths from a to b for both Pac-Man and ghosts
 controllers.
 
-- added a new class called PathsCache that pre-computed many paths and can construct a path from any node to any other node on the fly.
+- added a new class called PathsCache that pre-computed many paths and can construct a path from any treeNode to any other treeNode on the fly.
 - added static instances of PathsCache to Game, one for each maze.
-- added the method getApproximateShortestPathDistance() that returns the exact distance for the ghosts from node a to node b.
+- added the method getApproximateShortestPathDistance() that returns the exact distance for the ghosts from treeNode a to treeNode b.
 - the method getApproximateShortestPath() now returns the exact (A*) path.
 - the method getAStarPath() is now identical to getApproximateShortestPath(). They are both preserved for compatibility reasons.
 - changed all the methods that return paths for the ghosts - these methods are now exact (even though the name remains with 'approximate' in tact to ensure compatibility.
@@ -88,7 +88,7 @@ controllers.
 - fixed some minor issues with the time argument in Executor
 - new constructor to game to specify initial maze, also changed _init() to reflect this.
 - added the method getCurrentMaze() to Game to allow PathsCache access to the current maze.
-- added the method getMoveToMakeToReachDirectNeighbour() to game: returns direction to take given a node and a direct neighbour.
+- added the method getMoveToMakeToReachDirectNeighbour() to game: returns direction to take given a treeNode and a direct neighbour.
 - tidied up the code a bit.
 - fixed some javadoc errors.
 
@@ -104,7 +104,7 @@ WCCI12_v0.4
 
 WCCI12_v0.3
 
-- added the method getNeighbour(int nodeIndex, MOVE moveToBeMade) that returns the neighbouring node of the current node given a move.
+- added the method getNeighbour(int nodeIndex, MOVE moveToBeMade) that returns the neighbouring treeNode of the current treeNode given a move.
 - fixed minor bug in GameView (change from ArrayList to Vector to make it thread safe)
 - removed the method: getAStarPath(int fromNodeIndex,int toNodeIndex). It is identical to getShortestPath(int fromNodeIndex,int toNodeIndex).
 - fixed a minor bug in the method that replaces invalid ghost moves with random moves.
@@ -116,7 +116,7 @@ WCCI12_v0.2
 - changed argument name in the methods
 	isPillStillAvailable()
 	isPowerPillStillAvailable()
-  to highlight that they take pill indices, not node indices.
+  to highlight that they take pill indices, not treeNode indices.
 - added more helper methods:
 	getJunctionIndices()
 	getPillIndex()
